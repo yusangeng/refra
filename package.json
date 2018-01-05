@@ -1,0 +1,43 @@
+{
+  "name": "litchy",
+  "version": "0.1.0",
+  "description": "Basic object model used in ES201x code.",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
+  "scripts": {
+    "test": "node_modules/.bin/babel-node node_modules/.bin/isparta cover node_modules/.bin/_mocha",
+    "transpile": "./node_modules/.bin/babel ./src -d ./lib --source-maps inline",
+    "prepublish": "npm test && npm run transpile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yusangeng/litchy.git"
+  },
+  "keywords": [
+    "object",
+    "ES201x",
+    "mixin",
+    "decorator"
+  ],
+  "author": {
+    "name": "yusangeng",
+    "email": "yusangeng@outlook.com"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.1",
+    "babel-preset-env": "^1.6.1",
+    "chai": "^4.1.0",
+    "isparta": "^4.0.0",
+    "istanbul": "0.4.4",
+    "mocha": "^3.5.0"
+  },
+  "dependencies": {
+    "chivy": "^0.1.7",
+    "lodash": "^4.17.4",
+    "mix-with": "^1.0.2",
+    "param-check": "^1.1.8",
+    "polygala": "^0.1.0"
+  }
+}

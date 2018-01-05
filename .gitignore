@@ -57,3 +57,7 @@ typings/
 # dotenv environment variables file
 .env
 
+# user
+.package
+doc
+lib
