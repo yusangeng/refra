@@ -60,3 +60,29 @@ class Foobar extends mix(Base).with(Disposable) {
   }
 }
 ```
+
+### mixin
+
+litchy中提供的功能以mixin类的形式给出, 大致形式为:
+
+``` js
+export default superclass => class extends superclass {
+  // ...
+}
+```
+
+使用时需要配合mix方法, 具体方法如下: 
+
+``` js
+import Disposable from 'litchy/lib/mixin/Disposable'
+import mix from 'litchy/lib/mix'
+
+class Base {}
+
+class Sub extends mix(Base).with(Disposable) {
+  // ...
+}
+
+```
+
+接口文档见: [DOC.md](./DOC.md)
