@@ -96,7 +96,7 @@ describe('Eventable', _ => {
       const e = new E()
       let flag = 0
       e.on('foobar', evt => { flag = evt.data })
-      e.pauseEvents()
+      e.pauseEvent()
 
       e.trigger({
         type: 'foobar',
@@ -112,8 +112,8 @@ describe('Eventable', _ => {
       let flag = 0
       e.on('foobar', evt => { flag = evt.data })
 
-      e.pauseEvents()
-      e.resumeEvents()
+      e.pauseEvent()
+      e.resumeEvent()
 
       e.trigger({
         type: 'foobar',
