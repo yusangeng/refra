@@ -4,10 +4,10 @@
  * @author Y3G
  */
 
-import mix from 'mix-with'
 import Logger from 'chivy'
 import Disposable from './mixin/Disposable'
 import Eventable from './mixin/Eventable'
+import mix from './mix'
 
 const log = new Logger('litchy/litchy')
 
