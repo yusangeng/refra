@@ -55,7 +55,7 @@
 * event {Object|string} 事件对象, 其中type字段为事件类型. 当event为string时, 内部会转换为一个type字段为event的plain object. 
 * sync {boolean} 是否同步执行回调函数, 默认为false, 即异步执行. 
 
-#### 返回值
+##### 返回值
 
 {Promise}
 
@@ -70,6 +70,40 @@
 #### afterEvents()
 
 批量处理一个消息循环中的所有事件. 默认不作任何处理, 如果需要自定义处理过程, 需要子类重写这个函数. 
+
+## HasId - id相关支持
+
+### 属性
+
+#### id
+
+id值, 只读.
+
+### 方法
+
+#### initId(id)
+
+初始化id, 建议在子类构造函数中调用.
+
+##### 参数
+
+* id {string|undefined} id值, 如果为undefined, 则自动随机生成一个.
+
+##### 返回值
+
+{string} id值.
+
+#### changeId(id)
+
+更新id. 如果HasId和Eventable一起使用, changeId会发出一个type为`id-change`的事件.
+
+##### 参数
+
+* id {string} 新id值.
+
+##### 返回值
+
+{string} 原来的id值.
 
 # decorator
 
