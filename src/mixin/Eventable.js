@@ -102,13 +102,13 @@ export default superclass => class extends superclass {
     })
   }
 
-  pauseEvents () {
-    inv(this.assertUndisposed, this, 'pauseEvents')
+  pauseEvent () {
+    inv(this.assertUndisposed, this, 'pauseEvent')
     this.eventPaused_ = true
   }
 
-  resumeEvents () {
-    inv(this.assertUndisposed, this, 'resumeEvents')
+  resumeEvent () {
+    inv(this.assertUndisposed, this, 'resumeEvent')
     this.eventPaused_ = false
   }
 
