@@ -57,7 +57,10 @@ export default superclass => class HasId extends superclass {
       prevId: this.id_
     })
 
+    const ret = this.id_
     this.id_ = id
+
+    return ret
   }
 
   mapRawId (rawId) {
