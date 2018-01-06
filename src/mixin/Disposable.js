@@ -9,8 +9,8 @@ export default superclass => class extends superclass {
     return this.disposed_
   }
 
-  constructor () {
-    super()
+  constructor (...params) {
+    super(...params)
     this.disposed_ = false
   }
 

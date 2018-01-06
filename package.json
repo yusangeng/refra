@@ -1,6 +1,6 @@
 {
   "name": "litchy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Basic object model used in ES201x code.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
@@ -38,6 +38,7 @@
     "lodash": "^4.17.4",
     "mix-with": "^1.0.2",
     "param-check": "^1.1.8",
-    "polygala": "^0.1.0"
+    "polygala": "^0.1.0",
+    "shortid": "^2.2.8"
   }
 }

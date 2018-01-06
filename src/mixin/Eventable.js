@@ -11,7 +11,7 @@ import { microTask, macroTask } from 'polygala'
 
 const { assign, keys } = Object
 const { isArray } = Array
-const log = new Logger('litchy/Eventable')
+const log = new Logger('litchy/mixin/Eventable')
 var lastHandleValue = Number.MIN_SAFE_INTEGER
 
 function inv (fn, that, ...params) {
@@ -25,8 +25,8 @@ export default superclass => class extends superclass {
     return this.eventPaused_
   }
 
-  constructor () {
-    super()
+  constructor (...params) {
+    super(...params)
 
     this.emap_ = {}
     this.eventQueue_ = []
