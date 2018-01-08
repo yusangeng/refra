@@ -45,19 +45,19 @@ export default superclass => class HasId extends superclass {
 
   changeId (id) {
     check(id, 'id').isString().got('length').gt(0)
-    log.warn(`Changing id is DANGEROUS: ${id} -> ${this.id}.`)
+    log.warn(`Changing id is DANGEROUS, ${this.id} -> ${id}.`)
 
-    if (this.id_ === id) {
+    if (this.id === id) {
       return
     }
 
     inv(this.trigger, this, {
       type: 'id-change',
       id: id,
-      prevId: this.id_
+      prevId: this.id
     })
 
-    const ret = this.id_
+    const ret = this.id
     this.id_ = id
 
     return ret

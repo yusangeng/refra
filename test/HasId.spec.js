@@ -53,4 +53,15 @@ describe('HasId', _ => {
       done()
     })
   })
+
+  describe('#changeId', _ => {
+    it('should NOT throw error.', done => {
+      const h = new HasId()
+
+      h.changeId('qwerty')
+      h.id.should.be.equal('qwerty')
+
+      done()
+    })
+  })
 })

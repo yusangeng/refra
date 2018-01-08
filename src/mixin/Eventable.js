@@ -22,6 +22,7 @@ function inv (fn, that, ...params) {
 
 export default superclass => class extends superclass {
   get eventPaused () {
+    inv(this.assertUndisposed, this, 'eventPaused getter')
     return this.eventPaused_
   }
 

@@ -1,8 +1,3 @@
-/**
- * Undisposed装饰器
- *
- * @author Y3G
- */
 
 const { assign } = Object
 
