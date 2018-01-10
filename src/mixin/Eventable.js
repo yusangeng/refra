@@ -8,6 +8,9 @@ import isString from 'lodash/isString'
 import check from 'param-check'
 import Logger from 'chivy'
 import { microTask, macroTask } from 'polygala'
+import undisposed from '../decorator/undisposed'
+import mix from '../mix'
+import Disposable from './Disposable'
 
 const { assign, keys } = Object
 const { isArray } = Array
@@ -20,9 +23,9 @@ function inv (fn, that, ...params) {
   }
 }
 
-export default superclass => class extends superclass {
+export default superclass => class extends mix(superclass).with(Disposable) {
+  @undisposed
   get eventPaused () {
-    inv(this.assertUndisposed, this, 'eventPaused getter')
     return this.eventPaused_
   }
 
@@ -38,14 +41,13 @@ export default superclass => class extends superclass {
     this.eventQueue_ = null
     this.emap_ = null
 
-    inv(super.dispose, this)
+    super.dispose()
   }
 
+  @undisposed
   on (type, callback) {
     check(type, 'type').is('string', 'array')
     check(callback, 'callback').isFunction()
-
-    inv(this.assertUndisposed, this, 'on')
 
     if (isArray(type)) {
       // 同时监听多个事件
@@ -63,9 +65,9 @@ export default superclass => class extends superclass {
     return _ => delete this.emap_[type][handle]
   }
 
+  @undisposed
   trigger (event, sync = false) {
     check(event, 'event').is('object', 'string')
-    inv(this.assertUndisposed, this, 'trigger')
 
     const e = (isString(event)) ? {type: event} : event
 
@@ -103,20 +105,23 @@ export default superclass => class extends superclass {
     })
   }
 
+  @undisposed
   pauseEvent () {
-    inv(this.assertUndisposed, this, 'pauseEvent')
     this.eventPaused_ = true
   }
 
+  @undisposed
   resumeEvent () {
-    inv(this.assertUndisposed, this, 'resumeEvent')
     this.eventPaused_ = false
   }
 
+  @undisposed
   afterEvents (events) {
     // 由子类重写
     log.debug(`Eventable.afterEvents`, events)
   }
+
+  // private
 
   doAfterEvents (events) {
     if (this.disposed) {
