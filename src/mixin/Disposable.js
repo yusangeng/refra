@@ -19,9 +19,9 @@ export default superclass => class extends superclass {
     this.disposed_ = true
   }
 
-  assertUndisposed (name = 'unknown') {
+  assertUndisposed (methodName = 'unknown') {
     if (this.disposed) {
-      throw new Error(`Object has been disposed, method(${name}) should NOT be invoked.`)
+      throw new Error(`Object has been disposed, method(${methodName}) should NOT be invoked.`)
     }
   }
 }
