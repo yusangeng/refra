@@ -32,7 +32,7 @@ function decorateUndisposedProperty (target, key, descriptor) {
   return ret
 }
 
-export default function decorateUndisposed (target, key, descriptor) {
+export default function undisposed (target, key, descriptor) {
   if (descriptor.get || descriptor.set) {
     return decorateUndisposedProperty(target, key, descriptor)
   }
