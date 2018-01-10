@@ -11,8 +11,8 @@
     "build-release": "node_modules/.bin/webpack --color --config ./webpack/release.js",
     "prebuild": "npm test",
     "build": "npm run build-debug && npm run build-release",
-    "transpile": "./node_modules/.bin/babel ./src -d ./lib --source-maps inline",
-    "prepublish": "npm test && npm run transpile"
+    "es5": "./node_modules/.bin/babel ./src -d ./lib --source-maps inline",
+    "prepublish": "npm test && npm run es5"
   },
   "repository": {
     "type": "git",
