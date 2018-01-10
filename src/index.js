@@ -1,24 +1,16 @@
 import mix from './mix'
-import Eventable from './class/Eventable'
-import DisposableMixin from './mixin/Disposable'
-import EventableMixin from './mixin/Eventable'
-import ReactiveMixin from './mixin/Reactive'
-import Reactive from './class/Reactive'
-import reactive from './reactive'
+import Disposable from './mixin/Disposable'
+import Eventable from './mixin/Eventable'
+import Reactive from './mixin/Reactive'
+import HasId from './mixin/HasId'
 import decorator from './decorator'
 // import '../test/Reactive.spec'
 
-const mixin = {
-  Disposable: DisposableMixin,
-  Eventable: EventableMixin,
-  Reactive: ReactiveMixin
-}
-
 export {
   mix,
+  Disposable,
   Eventable,
   Reactive,
-  reactive,
-  mixin,
+  HasId,
   decorator
 }
