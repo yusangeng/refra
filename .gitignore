@@ -59,6 +59,5 @@ typings/
 
 # user
 .package
-doc
 lib
 .DS_Store
