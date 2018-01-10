@@ -58,14 +58,8 @@ describe('Reactive', _ => {
         c: 0
       })
 
-      obj.get().should.be.deep.eq({
-        a: 0,
-        b: 0,
-        c: 0
-      })
-
-      obj.has('a').should.be.eq(true)
-      obj.has('e').should.be.eq(false)
+      obj.hasProp('a').should.be.eq(true)
+      obj.hasProp('e').should.be.eq(false)
 
       obj.somAction(1, -1)
 
@@ -77,13 +71,13 @@ describe('Reactive', _ => {
         b: obj.b + -5
       })
 
-      obj.get().should.be.deep.eq({
+      obj.getPropValues().should.be.deep.eq({
         a: 7,
         b: -7,
         c: 0
       })
 
-      obj.set({
+      obj.setPropValues({
         a: 7,
         b: -7
       })

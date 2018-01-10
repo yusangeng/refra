@@ -3,10 +3,9 @@
 import 'babel-polyfill'
 import chai from 'chai'
 import mix from 'mix-with'
-import DisposableMixin from '../src/mixin/Disposable'
 import EventableMixin from '../src/mixin/Eventable'
 
-class E extends mix().with(DisposableMixin, EventableMixin) {
+class E extends mix().with(EventableMixin) {
 }
 
 chai.should()
