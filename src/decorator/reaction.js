@@ -1,7 +1,7 @@
 
-export default function decoratorReaction (target, key, descriptor) {
+export default function reaction (target, key, descriptor) {
   if (descriptor.get || descriptor.set) {
-    throw new TypeError(`Property should NOT be decorated by @reaction.`)
+    throw new TypeError(`Property ${key} should NOT be decorated by @reaction.`)
   }
 
   const fn = descriptor.value

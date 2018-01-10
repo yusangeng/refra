@@ -1,7 +1,7 @@
 import mix from '../mix'
 import Reactive from '../mixin/Reactive'
 
-export default function decoratorReactive (target) {
+export default function reactive (target) {
   return class DecoratedReactiveClass extends mix(target).with(Reactive) {
     constructor (...params) {
       super(...params)

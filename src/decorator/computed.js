@@ -1,5 +1,5 @@
 
-export default function decoratorComputed (target, key, descriptor) {
+export default function computed (target, key, descriptor) {
   if (descriptor.set) {
     throw new TypeError(`Computed prop should NOT have setter.`)
   }
