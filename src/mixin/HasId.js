@@ -63,6 +63,8 @@ export default superclass => class HasId extends superclass {
     return ret
   }
 
+  // private
+
   mapRawId (rawId) {
     // 由子类重写
     return rawId
