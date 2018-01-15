@@ -26,15 +26,13 @@ function inv (fn, that, ...params) {
 export default superclass => class extends mix(superclass).with(Disposable) {
   @undisposed
   get eventPaused () {
+    this.initEventable()
     return this.eventPaused_
   }
 
   constructor (...params) {
     super(...params)
-
-    this.emap_ = {}
-    this.eventQueue_ = []
-    this.eventPaused_ = false
+    this.initEventable()
   }
 
   dispose () {
@@ -48,6 +46,8 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   on (type, callback) {
     check(type, 'type').is('string', 'array')
     check(callback, 'callback').isFunction()
+
+    this.initEventable()
 
     if (isArray(type)) {
       // 同时监听多个事件
@@ -69,11 +69,11 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   trigger (event, sync = false) {
     check(event, 'event').is('object', 'string')
 
+    this.initEventable()
     const e = (isString(event)) ? {type: event} : event
-
     log.debug(`Triggering event: ${e.type}`, e)
-
     this.eventQueue_.push(e)
+
     macroTask(_ => {
       const queue = this.eventQueue_
 
@@ -107,11 +107,13 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
   @undisposed
   pauseEvent () {
+    this.initEventable()
     this.eventPaused_ = true
   }
 
   @undisposed
   resumeEvent () {
+    this.initEventable()
     this.eventPaused_ = false
   }
 
@@ -122,6 +124,16 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   }
 
   // private
+
+  initEventable () {
+    if (this.emap_) {
+      return
+    }
+
+    this.emap_ = {}
+    this.eventQueue_ = []
+    this.eventPaused_ = false
+  }
 
   doAfterEvents (events) {
     if (this.disposed) {
