@@ -6,17 +6,16 @@
 
 ### mixin方式
 
-*注意*: Reactive会自动引入Eventable, 不要重复引入.
-
 ``` js
 import Reactive from 'litchy/lib/mixin/Reactive'
+import Eventable from 'litchy/lib/mixin/Eventable'
 import mix from 'litchy/lib/mix'
 
 class Base {
   // ...
 }
 
-class Foobar extends mix(Base).with(Reactive) {
+class Foobar extends mix(Base).with(Eventable, Reactive) {
   constructor() {
     super()
     this.initReactive({apple: 0})
@@ -31,11 +30,12 @@ class Foobar extends mix(Base).with(Reactive) {
 ### 装饰方式
 
 ``` js
+import Eventable from 'litchy/lib/Eventable'
 import reactive from 'litchy/lib/decorator/reactive'
 import props from 'litchy/lib/decorator/props'
 
 @reactive
-class Foobar {
+class Foobar extends Eventable {
   @props({
     apple: 0
   })
