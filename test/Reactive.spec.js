@@ -8,11 +8,12 @@ import computed from '../src/decorator/computed'
 import { action, asyncAction } from '../src/decorator/action'
 import reaction from '../src/decorator/reaction'
 import props from '../src/decorator/props'
+import Eventable from '../src/Eventable'
 
 chai.should()
 
 @reactive
-class MyClass {
+class MyClass extends Eventable {
   @props({
     a: 0,
     b: 0

@@ -11,7 +11,6 @@ import Logger from 'chivy'
 import mapValues from 'lodash/mapValues'
 import isFunction from 'lodash/isFunction'
 import isString from 'lodash/isString'
-import mix from '../mix'
 import Eventable from './Eventable'
 import undisposed from '../decorator/undisposed'
 
@@ -55,7 +54,7 @@ const spy = {
   }
 }
 
-export default superclass => class extends mix(superclass).with(Eventable) {
+export default superclass => class extends superclass {
   @undisposed
   get batch () {
     return this.reactiveBatch_
