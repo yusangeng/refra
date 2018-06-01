@@ -76,7 +76,7 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
     macroTask(_ => {
       const queue = this.eventQueue_
-      if(!queue || !queue.length) return
+      if (!queue || !queue.length) return
 
       this.doAfterEvents(queue)
       this.eventQueue_ = []
