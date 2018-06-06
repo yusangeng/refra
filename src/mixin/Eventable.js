@@ -17,12 +17,6 @@ const { isArray } = Array
 const log = new Logger('litchy/mixin/Eventable')
 var lastHandleValue = Number.MIN_SAFE_INTEGER
 
-function inv (fn, that, ...params) {
-  if (fn) {
-    return fn.apply(that, params || [])
-  }
-}
-
 export default superclass => class extends mix(superclass).with(Disposable) {
   @undisposed
   get eventPaused () {

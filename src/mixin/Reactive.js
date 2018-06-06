@@ -10,8 +10,6 @@ import fastDeepEqual from 'fast-deep-equal'
 import Logger from 'chivy'
 import mapValues from 'lodash/mapValues'
 import isFunction from 'lodash/isFunction'
-import isString from 'lodash/isString'
-import Eventable from './Eventable'
 import undisposed from '../decorator/undisposed'
 
 const { keys, defineProperties, assign } = Object
@@ -49,7 +47,7 @@ const spy = {
     return this.foundObserved
   },
 
-  setRunningGetterName(name) {
+  setRunningGetterName (name) {
     this.runningGetterName = name
   }
 }
@@ -309,7 +307,7 @@ export default superclass => class extends superclass {
     return this
   }
 
-  propChangesHandler(evt) {
+  propChangesHandler (evt) {
     const reactions = this.reactions_
     const {changes} = evt
 
