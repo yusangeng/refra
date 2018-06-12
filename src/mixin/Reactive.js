@@ -285,6 +285,19 @@ export default superclass => class extends superclass {
   }
 
   initReaction (fn) {
+    if (isFunction(fn)) {
+      return this.initAutoReaction(fn)
+    }
+
+    const item = {
+      fn: fn.fn.bind(this),
+      observing: fn.observing
+    }
+
+    return item
+  }
+
+  initAutoReaction (fn) {
     const item = {fn: fn.bind(this)}
 
     try {
