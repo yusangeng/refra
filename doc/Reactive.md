@@ -144,7 +144,7 @@ get apple() {
 
 ``` js
 @reactive
-class Foobar {
+class Foobar extends Eventable {
   @props({
     apple: 0,
     banana: [1, 2, 3],
@@ -168,9 +168,47 @@ class Foobar {
 }
 ```
 
+### @asyncAction
+
+有时我们的批量操作是跨事件循环的, 此时无法使用@action装饰器合并`prop-change`事件, 此时应使用@asyncAction装饰器.
+
+被装饰为@asyncAction的成员函数应返回一个Promise实例, Reactive内部会调用then方法监听Promise实例的完成, 继而发出`prop-change`事件.
+
+#### 例子
+
+``` js
+class Foobar extends Eventable {
+  @props({
+    apple: 0,
+    banana: [1, 2, 3],
+    orange: _ => Math.random()
+  })
+
+  @computed
+  get cherry () {
+    return this.apple + this.banana.reduce((prev, el) => {
+      return prev + el
+    }, 0) + this.orange
+  }
+
+  @asyncAction
+  someMethod() {
+    return new Promise (resolve => {
+      setTimeout(_ => {
+        // 修改这三个属性, cherry属性只会发出一次prop-change事件
+        this.apple = 1
+        this.banana = [2, 3, 4]
+        this.orange = Math.random()
+        resolve() // 批量操作完成
+      }, 1000)
+    })
+  }
+}
+```
+
 ### @reaction
 
-有时我们希望监听某些属性的变化, 并做出某些反馈. 一个显而易见的方法是监听`prop-change`事件并在回调函数中执行反馈. 而@reaction是一个语法糖, 实现了自动注册事件回调以及自动分析依赖关系. 
+有时我们希望监听某些属性的变化, 并做出某些反馈. 一个显而易见的方法是监听`prop-change`事件并在回调函数中执行反馈. 使用@reaction装饰器可以显式声明回调函数并声明其依赖的属性.
 
 #### 例子
 
@@ -186,7 +224,32 @@ class Foobar {
   }
 
   // apple属性改变后, 这个方法会自动运行
-  @reaction
+  @reaction('apple')
+  onAppleChange() {
+    console.log(this.apple)
+  }
+}
+```
+
+### @autoReaction
+
+与@action的显式声明不同, @autoReaction会自动分析一个成员函数依赖的属性.
+
+#### 例子
+
+``` js
+@reactive
+class Foobar {
+  @props({
+    apple: 0
+  })
+
+  someMethod() {
+    this.apple = 1
+  }
+
+  // apple属性改变后, 这个方法会自动运行
+  @autoReaction
   onAppleChange() {
     console.log(this.apple)
   }

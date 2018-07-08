@@ -49,3 +49,7 @@ class Foobar {
   }
 }
 ```
+
+## 文档
+
+[请访问doc目录.](https://github.com/yusangeng/litchy/tree/master/doc)
