@@ -40,11 +40,13 @@ class MyClass {
   }
 
   @asyncAction
-  someAsyncAction (end, aa, bb) {
-    setTimeout(_ => {
-      this.a += aa
-      this.b += bb
-      end()
+  someAsyncAction (aa, bb) {
+    return new Promise(resolve => {
+      setTimeout(_ => {
+        this.a += aa
+        this.b += bb
+        resolve()
+      }, 10)
     })
   }
 }
