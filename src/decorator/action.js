@@ -43,11 +43,12 @@ export function asyncAction (target, key, descriptor) {
 
       if (ret.then && ret.catch) {
         // 返回promise
-        ret.then((...params) => {
+        ret.then((...data) => {
           this.endBatch()
-          return Promise.resolve(...params)
+          return Promise.resolve(...data)
         }).catch(err => {
           log.error(`Error occured during async action invoked. error: ${err.message || err}, action name: ${fn.mame || '[unknown]'}.`)
+          this.endBatch()
           return Promise.reject(err)
         })
       }
