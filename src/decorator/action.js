@@ -13,15 +13,18 @@ export function action (target, key, descriptor) {
     value: function (...params) {
       this.startBatch()
       let error = null
+      let ret = null
 
       try {
-        fn.apply(this, params)
+        ret = fn.apply(this, params)
       } catch (err) {
         error = err
       }
 
       this.endBatch()
       if (error) throw error
+
+      return ret
     }
   }
 }
@@ -40,17 +43,19 @@ export function asyncAction (target, key, descriptor) {
 
       if (ret.then && ret.catch) {
         // 返回promise
-        ret.then(_ => {
+        ret.then((...params) => {
           this.endBatch()
+          return Promise.resolve(...params)
         }).catch(err => {
           log.error(`Error occured during async action invoked. error: ${err.message || err}, action name: ${fn.mame || '[unknown]'}.`)
+          return Promise.reject(err)
         })
-
-        return
       }
 
       // 如果不反回promise, 则等同同步action
       this.endBatch()
+
+      return ret
     }
   }
 }
