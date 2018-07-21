@@ -93,7 +93,7 @@ describe('Reactive', _ => {
 
       setTimeout(_ => {
         obj.c.should.be.eq(-1)
-        c.should.be.eq(7)
+        c.should.be.eq(6)
         obj.dispose()
         done()
       }, 100)

@@ -43,7 +43,7 @@ export function asyncAction (target, key, descriptor) {
 
       if (ret.then && ret.catch) {
         // 返回promise
-        ret.then((...data) => {
+        return ret.then((...data) => {
           this.endBatch()
           return Promise.resolve(...data)
         }).catch(err => {
