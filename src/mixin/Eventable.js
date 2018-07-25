@@ -56,7 +56,12 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
     map[handle] = callback
 
-    return _ => delete this.emap_[type][handle]
+    return _ => {
+      const { emap_: emap } = this
+      if (emap && emap[type]) {
+        delete emap[type][handle]
+      }
+    }
   }
 
   @undisposed
