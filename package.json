@@ -1,6 +1,6 @@
 {
   "name": "litchy",
-  "version": "1.4.6",
+  "version": "2.0.0",
   "description": "Basic object model used in ES201x code.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
