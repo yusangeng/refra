@@ -1,4 +1,6 @@
-import eventable from './decorator/eventable'
+import Base from './Base'
+import mix from './mix'
+import Clearable from './mixin/Clearable'
+import Eventable from './mixin/Eventable'
 
-@eventable
-export default class EventableClass {}
+export default class EventableClass extends mix(Base).with(Clearable, Eventable) {}

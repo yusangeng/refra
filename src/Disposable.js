@@ -1,4 +1,5 @@
-import disposable from './decorator/disposable'
+import Base from './Base'
+import mix from './mix'
+import Disposable from './mixin/Disposable'
 
-@disposable
-export default class DisposableClass {}
+export default class DisposableClass extends mix(Base).with(Disposable) {}

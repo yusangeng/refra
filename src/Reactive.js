@@ -1,5 +1,10 @@
 import Eventable from './Eventable'
-import reactive from './decorator/reactive'
+import mix from './mix'
+import Reactive from './mixin/Reactive'
 
-@reactive
-export default class ReactiveClass extends Eventable {}
+export default class ReactiveClass extends mix(Eventable).with(Reactive) {
+  constructor (...params) {
+    super(...params)
+    this.initDecoratedReactive()
+  }
+}
