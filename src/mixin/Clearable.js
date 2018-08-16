@@ -15,13 +15,17 @@ export default superclass => class extends superclass {
 
   dispose () {
     this.runClearers()
-    super.dispose()
+    if (super.dispose) {
+      super.dispose()
+    }
   }
 
   @undisposed
   runClearers () {
-    this.clearerQueue_.forEach(fn => fn())
-    this.clearerQueue_ = []
+    if (this.clearerQueue_.length) {
+      this.clearerQueue_.forEach(fn => fn())
+      this.clearerQueue_ = []
+    }
   }
 
   @undisposed
