@@ -65,6 +65,16 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   }
 
   @undisposed
+  once (type, callback) {
+    const off = this.on(type, evt => {
+      callback(evt)
+      off()
+    })
+
+    return off
+  }
+
+  @undisposed
   trigger (event, sync = false) {
     check(event, 'event').is('object', 'string')
 
