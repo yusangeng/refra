@@ -1,17 +1,17 @@
 {
   "name": "litchy",
-  "version": "2.0.2",
-  "description": "Basic object model used in ES201x code.",
+  "version": "2.0.3",
+  "description": "EcmaScript infrastructure.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
     "test": "node_modules/.bin/babel-node node_modules/.bin/isparta cover node_modules/.bin/_mocha",
-    "test-win": "mocha --compilers babel-core/register",
     "build-debug": "node_modules/.bin/webpack --color --config ./webpack/debug.js",
     "build-release": "node_modules/.bin/webpack --color --config ./webpack/release.js",
+    "dep-analyze": "node_modules/.bin/webpack --color --config ./webpack/debug.js --profile --json > ./.package/DependenceNetwork.json",
     "prebuild": "npm test",
-    "build": "npm run build-debug && npm run build-release",
-    "es5": "./node_modules/.bin/babel ./src -d ./lib --source-maps inline",
+    "build": "rm -rf ./.package && npm run build-debug && npm run build-release",
+    "es5": "rm -rf ./lib && ./node_modules/.bin/babel ./src -d ./lib --source-maps inline",
     "prepublish": "npm test && npm run es5"
   },
   "repository": {
@@ -19,8 +19,7 @@
     "url": "https://github.com/yusangeng/litchy.git"
   },
   "keywords": [
-    "object",
-    "ES201x",
+    "infra",
     "mixin",
     "decorator"
   ],
@@ -37,22 +36,16 @@
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-es2015": "^6.24.1",
     "chai": "^4.1.0",
     "isparta": "^4.0.0",
     "istanbul": "0.4.4",
     "mocha": "^3.5.0",
     "uglifyjs-webpack-plugin": "^1.1.6",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-bundle-analyzer": "^2.13.1"
   },
   "dependencies": {
-    "chivy": "^0.1.7",
-    "clone": "^2.1.1",
     "fast-deep-equal": "^1.0.0",
-    "lodash": "^4.17.4",
-    "mix-with": "^1.0.2",
-    "param-check": "^1.1.8",
-    "polygala": "^0.1.0",
-    "shortid": "^2.2.8"
+    "mix-with": "^1.0.2"
   }
 }

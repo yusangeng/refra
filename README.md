@@ -1,4 +1,4 @@
-# litchy | Basic object model used in ES201x code.
+# litchy | EcmaScript infrastructure
 
 [![Build Status](https://travis-ci.org/yusangeng/litchy.svg?branch=master)](https://travis-ci.org/yusangeng/litchy) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 

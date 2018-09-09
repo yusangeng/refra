@@ -1,7 +1,3 @@
-import Logger from 'chivy'
-
-const log = new Logger('chivy/decorator/action')
-
 export function action (target, key, descriptor) {
   if (descriptor.get || descriptor.set) {
     throw new TypeError(`Property should NOT be decorated by @action.`)
@@ -47,7 +43,6 @@ export function asyncAction (target, key, descriptor) {
           this.endBatch()
           return Promise.resolve(...data)
         }).catch(err => {
-          log.error(`Error occured during async action invoked. error: ${err.message || err}, action name: ${fn.mame || '[unknown]'}.`)
           this.endBatch()
           return Promise.reject(err)
         })

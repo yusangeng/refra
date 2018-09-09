@@ -156,9 +156,9 @@ describe('Eventable', _ => {
           flag2.should.to.be.equal(0)
           done()
         } catch (err) {
-          done(new Error('Failed'))
+          done(err)
         }
-      }).catch(_ => done(new Error('Failed')))
+      }).catch(err => done(err))
 
       e.dispose()
     })

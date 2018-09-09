@@ -1,5 +1,6 @@
 
 var path = require('path')
+// var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 var config = {
   entry: path.resolve(__dirname, '../src/index.js'),
@@ -25,7 +26,13 @@ var config = {
     ]
   },
 
-  plugins: []
+  plugins: [
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'static',
+    //   reportFilename: 'BundleReport.html',
+    //   logLevel: 'info'
+    // })
+  ]
 }
 
 module.exports = config

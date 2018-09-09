@@ -4,7 +4,6 @@
  * @author Y3G
  */
 
-import check from 'param-check'
 import undisposed from '../decorator/undisposed'
 
 export default superclass => class extends superclass {
@@ -30,7 +29,6 @@ export default superclass => class extends superclass {
 
   @undisposed
   addClearer (fn) {
-    check(fn, 'fn').isFunction()
     this.clearerQueue_.push(fn)
   }
 }

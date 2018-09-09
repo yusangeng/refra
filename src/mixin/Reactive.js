@@ -4,16 +4,13 @@
  * @author Y3G
  */
 
-import check from 'param-check'
-import clone from 'clone'
 import fastDeepEqual from 'fast-deep-equal'
-import Logger from 'chivy'
-import mapValues from 'lodash/mapValues'
-import isFunction from 'lodash/isFunction'
+import clone from '../utils/clone'
+import mapValue from '../utils/mapValue'
+import isFunction from '../utils/isFunction'
 import undisposed from '../decorator/undisposed'
 
 const { keys, defineProperties, assign } = Object
-const log = new Logger('litchy/Reactive')
 
 function nope () {}
 
@@ -80,10 +77,6 @@ export default superclass => class extends superclass {
 
   @undisposed
   initReactive ({props = {}, computed = {}, reactions = [], equal = fastDeepEqual}) {
-    check(props, 'props').isObject()
-    check(reactions, 'reactions').isArray()
-    check(equal, 'equal').isFunction()
-
     if (this.equal_) {
       throw new Error('initReactive should ONLY be invoked once.')
     }
@@ -111,8 +104,6 @@ export default superclass => class extends superclass {
 
   @undisposed
   getPropValue (name) {
-    check(name, 'name').isString()
-
     const prop = this.reactiveProps_[name]
 
     if (!prop) {
@@ -130,13 +121,11 @@ export default superclass => class extends superclass {
 
   @undisposed
   getPropValues () {
-    return mapValues(this.reactiveProps_, (_, key) => this.getPropValue(key))
+    return mapValue(this.reactiveProps_, (_, key) => this.getPropValue(key))
   }
 
   @undisposed
   setPropValue (name, value) {
-    check(name, 'name').isString()
-
     const prop = this.reactiveProps_[name]
 
     if (!prop) {
@@ -162,14 +151,12 @@ export default superclass => class extends superclass {
 
   @undisposed
   setPropValues (map) {
-    check(map, 'map').isObject()
     keys(map).forEach(key => this.setPropValue(key, map[key]))
     return this
   }
 
   @undisposed
   hasProp (name) {
-    check(name, 'name').isString()
     return this.reactiveProps_.hasOwnProperty(name)
   }
 
@@ -193,7 +180,6 @@ export default superclass => class extends superclass {
       return props[key].getter && props[key].observing.includes(name)
     }).forEach(key => {
       // 对于computed属性, 只发出change事件即可, 避免冗余计算
-      log.debug(`Triggering computed prop change event: ${name} -> ${key}`)
       this.addPendingPropChange(key)
     })
 
@@ -247,8 +233,6 @@ export default superclass => class extends superclass {
   }
 
   initProp (name, def) {
-    check(name, 'name').isString().got('length').gt(0)
-
     this.reactiveProps_[name] = {
       value: isFunction(def) ? def.call(this) : clone(def)
     }
@@ -257,8 +241,6 @@ export default superclass => class extends superclass {
   }
 
   initComputedProp (name, getter) {
-    check(name, 'name').isString().got('length').gt(0)
-
     const prop = this.reactiveProps_[name] = {}
 
     try {
@@ -266,7 +248,13 @@ export default superclass => class extends superclass {
       spy.start(name)
       this.getPropValue(name)
     } catch (err) {
-      log.error(`Exception caught in getPropValue('${name}'), Oberserved prop spy failed.`, err)
+      this.trigger({
+        type: '__error__',
+        message: `Exception caught in getPropValue('${name}'), Oberserved prop spy failed.`,
+        error: err
+      }, true)
+
+      throw err
     } finally {
       spy.end()
     }
@@ -305,7 +293,13 @@ export default superclass => class extends superclass {
       // 注意, 这里暂不支持异步函数
       fn.call(this)
     } catch (err) {
-      log.error(`Exception caught in reaction fn, Oberserved prop spy failed.`, err, fn)
+      this.trigger({
+        type: '__error__',
+        message: `Exception caught in reaction fn, Oberserved prop spy failed.`,
+        error: err
+      }, true)
+
+      throw err
     } finally {
       spy.end()
     }
@@ -340,9 +334,9 @@ export default superclass => class extends superclass {
     try {
       ret = getter()
     } catch (err) {
-      log.error(`Exception caught in getter of prop(${name})`, err)
       this.trigger({
-        type: 'computed-prop-getter-error',
+        type: '__error__',
+        message: `Exception caught in getter of prop(${name}).`,
         error: err
       }, true)
     } finally {

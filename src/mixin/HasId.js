@@ -4,12 +4,8 @@
  * @author Y3G
  */
 
-import shortid from 'shortid'
-import check from 'param-check'
-import Logger from 'chivy'
-import isString from 'lodash/isString'
-
-const log = new Logger('litchy/mixin/HasId')
+import shortid from '../utils/shortid'
+import isString from '../utils/isString'
 
 function inv (fn, that, ...params) {
   if (fn) {
@@ -29,24 +25,17 @@ export default superclass => class HasId extends superclass {
 
   initId (id) {
     if (isString(id)) {
-      check(id.length, 'id.length').gt(0)
       this.id_ = id
-      log.debug(`External id: ${id}.`)
-
       return id
     }
 
     const newId = this.mapRawId(shortid())
-    this.id_ = newId
-    log.debug(`Generated id: ${newId}.`)
 
+    this.id_ = newId
     return newId
   }
 
   changeId (id) {
-    check(id, 'id').isString().got('length').gt(0)
-    log.warn(`Changing id is DANGEROUS, ${this.id} -> ${id}.`)
-
     if (this.id === id) {
       return
     }
