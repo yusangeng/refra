@@ -16,3 +16,48 @@ npm install refra --save
 ```
 
 ## Usage
+
+### Use decorator @refra
+
+``` js
+import { refra, prop, computed, action, reaction } from 'refra'
+
+@refra
+class Foobar {
+  @prop someProp = 0
+
+  @computed get comeComputedProp () {
+    return this.someProp * 2
+  }
+
+  @action someAction () {
+    this.someProp = 1
+  }
+
+  @reaction('someProp') someReaction (slice) {
+    console.log(slice)
+  }
+}
+```
+
+### Ues superclass Refra
+
+``` js
+import { Refra, prop, computed, action, reaction } from 'refra'
+
+class Foobar extends Refra {
+  @prop someProp = 0
+
+  @computed get comeComputedProp () {
+    return this.someProp * 2
+  }
+
+  @action someAction () {
+    this.someProp = 1
+  }
+
+  @reaction('someProp') someReaction (slice) {
+    console.log(slice)
+  }
+}
+```
