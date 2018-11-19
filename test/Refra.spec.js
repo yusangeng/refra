@@ -25,9 +25,10 @@ class TestRefra2 extends Refra {
     return (this.testProp1 + this.testProp2) * 2
   }
 
-  // constructor () {
-  //   console.log('new RestRefra2')
-  // }
+  constructor () {
+    super()
+    TestRefra2.afterRefra()
+  }
 
   testMethod () {
     this.testProp1 = 2
