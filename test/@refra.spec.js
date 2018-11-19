@@ -9,7 +9,8 @@ import {
   computed,
   action,
   reaction,
-  refra
+  refra,
+  on
 } from '../src/decorator'
 
 chai.should()
@@ -18,6 +19,7 @@ chai.should()
 class TestRefra {
   reactionTimes = 0
   autoReactionTimes = 0
+  propChangesEventHandlerTimes = 0
 
   @prop testProp1 = 1
   @prop testProp2 = 2
@@ -51,6 +53,11 @@ class TestRefra {
   @reaction('testProp1')
   testReaction () {
     this.reactionTimes += 1
+  }
+
+  @on('prop-changes')
+  onPropChanges (evt) {
+    this.propChangesEventHandlerTimes++
   }
 }
 
@@ -171,6 +178,34 @@ describe('@refra', _ => {
       await sleep(100)
 
       tr.reactionTimes.should.be.equal(3)
+    })
+  })
+
+  describe('prop-changes event handler', _ => {
+    it('should have right propChangesEventHandlerTimes', async () => {
+      const tr = new TestRefra()
+
+      tr.testProp1 = 2
+      tr.testProp1 = 3
+      tr.testProp1 = 4
+
+      await sleep(100)
+
+      tr.propChangesEventHandlerTimes.should.be.equal(3)
+    })
+
+    it('should have right propChangesEventHandlerTimes in batch mode', async () => {
+      const tr = new TestRefra()
+
+      tr.startBatch()
+      tr.testProp1 = 2
+      tr.testProp1 = 3
+      tr.testProp1 = 4
+      tr.endBatch()
+
+      await sleep(100)
+
+      tr.propChangesEventHandlerTimes.should.be.equal(1)
     })
   })
 })

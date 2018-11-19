@@ -5,7 +5,8 @@ import {
   action,
   asyncAction,
   reaction,
-  refra
+  refra,
+  on
 } from './decorator'
 
 import Refra from './Refra'
@@ -18,7 +19,8 @@ export {
   asyncAction,
   reaction,
   refra,
-  Refra
+  Refra,
+  on
 }
 
 export default {
@@ -29,5 +31,6 @@ export default {
   asyncAction,
   reaction,
   refra,
-  Refra
+  Refra,
+  on
 }

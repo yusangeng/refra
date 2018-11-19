@@ -4,6 +4,7 @@ import prop from './prop'
 import action from './action'
 import reaction from './reaction'
 import refra from './refra'
+import on from './on'
 
 export {
   undisposed,
@@ -11,7 +12,8 @@ export {
   computed,
   action,
   reaction,
-  refra
+  refra,
+  on
 }
 
 export default {
@@ -20,5 +22,6 @@ export default {
   computed,
   action,
   reaction,
-  refra
+  refra,
+  on
 }
