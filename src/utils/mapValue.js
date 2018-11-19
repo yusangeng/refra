@@ -1,5 +1,5 @@
 /**
- * lodash.mapValue
+ * fake lodash.mapValue
  *
  * @author Y3G
  */

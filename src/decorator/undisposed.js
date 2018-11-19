@@ -39,4 +39,3 @@ export default function undisposed (target, key, descriptor) {
 
   return decorateUndisposedMethod(target, key, descriptor)
 }
-

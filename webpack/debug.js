@@ -5,10 +5,10 @@ var path = require('path')
 var config = {
   entry: path.resolve(__dirname, '../src/index.js'),
   output: {
-    library: 'Litchy',
+    library: 'Refra',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, '../.package'),
-    filename: 'litchy.js',
+    filename: 'refra.js',
     umdNamedDefine: true
   },
 

@@ -1,55 +1,18 @@
-# litchy | EcmaScript infrastructure
+# refra
 
-[![Build Status](https://travis-ci.org/yusangeng/litchy.svg?branch=master)](https://travis-ci.org/yusangeng/litchy) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+Infrastructure of reactive programming.
 
-[![Npm Info](https://nodei.co/npm/litchy.png?compact=true)](https://www.npmjs.com/package/litchy)
+用来编写响应式（reactive）代码的基础对象模型.
 
-## 综述
+[![Build Status](https://travis-ci.org/yusangeng/refra.svg?branch=master)](https://travis-ci.org/yusangeng/refra) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
-ES201x基础对象模型, 以mixin和装饰的形式提供.
+[![Npm Info](https://nodei.co/npm/refra.png?compact=true)](https://www.npmjs.com/package/refra)
 
-## 安装
+
+## Install
 
 ``` shell
-npm install litchy --save
+npm install refra --save
 ```
 
-## 使用
-
-### mixin形式
-
-``` js
-import Eventable from 'litchy/lib/mixin/Disposable'
-import mix from 'litchy/lib/mix'
-
-class Base {
-  // ...
-}
-
-class Foobar extends mix(Base).with(Disposable) {
-  someMethod() {
-    this.assertUndisposed()
-    // ...
-  }
-}
-```
-
-### 装饰形式
-
-``` js
-import disposable from 'litchy/lib/decorator/disposable'
-import undisposed from 'litchy/lib/decorator/undisposed'
-import mix from 'mix-with'
-
-@disposable
-class Foobar {
-  @undisposed
-  someMethod() {
-    // ...
-  }
-}
-```
-
-## 文档
-
-[请访问doc目录.](https://github.com/yusangeng/litchy/tree/master/doc)
+## Usage

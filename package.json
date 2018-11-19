@@ -1,7 +1,7 @@
 {
-  "name": "litchy",
-  "version": "2.0.4",
-  "description": "EcmaScript infrastructure.",
+  "name": "refra",
+  "version": "3.0.0",
+  "description": "Infrastructure of reactive programming.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
   "scripts": {
@@ -16,7 +16,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yusangeng/litchy.git"
+    "url": "https://github.com/yusangeng/refra.git"
   },
   "keywords": [
     "infra",
@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "fast-deep-equal": "^1.0.0",
-    "mix-with": "^1.0.2"
+    "mix-with": "^1.0.2",
+    "polygala": "^2.1.0"
   }
 }

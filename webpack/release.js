@@ -7,10 +7,10 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 var config = {
   entry: path.resolve(__dirname, '../src/index.js'),
   output: {
-    library: 'Litchy',
+    library: 'Refra',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, '../.package'),
-    filename: 'litchy.min.js',
+    filename: 'refra.min.js',
     umdNamedDefine: true
   },
 

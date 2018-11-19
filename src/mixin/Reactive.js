@@ -4,10 +4,13 @@
  * @author Y3G
  */
 
+import mix from 'mix-with'
 import fastDeepEqual from 'fast-deep-equal'
 import clone from '../utils/clone'
 import mapValue from '../utils/mapValue'
 import isFunction from '../utils/isFunction'
+import Eventable from './Eventable'
+import Clearable from './Clearable'
 import undisposed from '../decorator/undisposed'
 
 const { keys, defineProperties, assign } = Object
@@ -49,7 +52,7 @@ const spy = {
   }
 }
 
-export default superclass => class extends superclass {
+export default superclass => class extends mix(superclass).with(Eventable, Clearable) {
   @undisposed
   get batch () {
     return this.reactiveBatch_
@@ -62,12 +65,11 @@ export default superclass => class extends superclass {
     this.reactions_ = []
     this.pendingChanges_ = []
     this.reactiveBatch_ = false
+    this.reactionHandlerBinded_ = false
   }
 
   @undisposed
   dispose () {
-    this.propChangeHandlerOff_()
-    this.propChangeHandlerOff_ = null
     this.pendingChanges_ = []
     this.reactiveProps_ = {}
     this.equal_ = null
@@ -76,7 +78,8 @@ export default superclass => class extends superclass {
   }
 
   @undisposed
-  initReactive ({props = {}, computed = {}, reactions = [], equal = fastDeepEqual}) {
+  initReactive ({ props = {}, computed = {},
+    reactions = [], equal = fastDeepEqual }) {
     if (this.equal_) {
       throw new Error('initReactive should ONLY be invoked once.')
     }
@@ -120,8 +123,9 @@ export default superclass => class extends superclass {
   }
 
   @undisposed
-  getPropValues () {
-    return mapValue(this.reactiveProps_, (_, key) => this.getPropValue(key))
+  getSnapshot () {
+    return mapValue(this.reactiveProps_,
+      (_, key) => this.getPropValue(key))
   }
 
   @undisposed
@@ -150,8 +154,11 @@ export default superclass => class extends superclass {
   }
 
   @undisposed
-  setPropValues (map) {
+  setProps (map) {
+    this.startBatch()
     keys(map).forEach(key => this.setPropValue(key, map[key]))
+    this.endBatch()
+
     return this
   }
 
@@ -160,22 +167,67 @@ export default superclass => class extends superclass {
     return this.reactiveProps_.hasOwnProperty(name)
   }
 
+  @undisposed
+  defineProps (props) {
+    const names = keys(props)
+    defineProperties(this, names.reduce((prev, name) => {
+      if (this.hasProp(name)) {
+        throw new Error(`Prop ${name} should NOT be defined repeatedly.`)
+      }
+
+      return assign({}, prev, {
+        [`${name}`]: {
+          enumerable: true,
+          get: this.getPropValue.bind(this, name),
+          set: this.setPropValue.bind(this, name)
+        }
+      })
+    }, {}))
+
+    names.forEach(name => this.initProp(name, props[name]))
+    return this
+  }
+
+  @undisposed
+  defineComputedProps (props) {
+    const names = keys(props)
+    defineProperties(this, names.reduce((prev, name) => {
+      return assign({}, prev, {
+        [`${name}`]: {
+          enumerable: true,
+          get: this.getPropValue.bind(this, name),
+          set: this.setPropValue.bind(this, name)
+        }
+      })
+    }, {}))
+
+    names.forEach(name => this.initComputedProp(name, props[name]))
+    return this
+  }
+
+  @undisposed
+  defineReactions (reactions) {
+    reactions.forEach(reaction => {
+      this.reactions_.push(this.initReaction(reaction))
+    })
+
+    return this.listenToPropChanges()
+  }
+
   // private
 
   addPendingPropChange (name, value, former) {
     const pending = this.pendingChanges_
 
     if (!pending.find(el => el.name === name)) {
-      pending.push({name: name, value: value, former: former})
+      pending.push({ name, value, former })
     }
 
-    this.addPendingComputedPropChange(name, value, former)
-
-    return this
+    return this.addPendingComputedPropChange(name, value, former)
   }
 
   addPendingComputedPropChange (name, value, former) {
-    const {reactiveProps_: props} = this
+    const { reactiveProps_: props } = this
     keys(props).filter(key => {
       return props[key].getter && props[key].observing.includes(name)
     }).forEach(key => {
@@ -190,45 +242,13 @@ export default superclass => class extends superclass {
     const pending = this.pendingChanges_
 
     pending.forEach(el => {
-      this.trigger(assign({type: 'prop-change'}, el))
-      this.trigger(assign({type: `prop-change:${el.name}`}, el))
+      this.trigger(assign({ type: 'prop-change' }, el))
+      this.trigger(assign({ type: `prop-change:${el.name}` }, el))
     })
 
-    this.trigger({type: 'prop-changes', changes: pending})
+    this.trigger({ type: 'prop-changes', changes: pending })
     this.pendingChanges_ = []
 
-    return this
-  }
-
-  defineProps (props) {
-    const names = keys(props)
-    defineProperties(this, names.reduce((prev, name) => {
-      return assign({}, prev, {
-        [`${name}`]: {
-          enumerable: true,
-          get: this.getPropValue.bind(this, name),
-          set: this.setPropValue.bind(this, name)
-        }
-      })
-    }, {}))
-
-    names.forEach(name => this.initProp(name, props[name]))
-    return this
-  }
-
-  defineComputedProps (props) {
-    const names = keys(props)
-    defineProperties(this, names.reduce((prev, name) => {
-      return assign({}, prev, {
-        [`${name}`]: {
-          enumerable: true,
-          get: this.getPropValue.bind(this, name),
-          set: this.setPropValue.bind(this, name)
-        }
-      })
-    }, {}))
-
-    names.forEach(name => this.initComputedProp(name, props[name]))
     return this
   }
 
@@ -263,68 +283,44 @@ export default superclass => class extends superclass {
     return this
   }
 
-  defineReactions (reactions) {
-    reactions.forEach(reaction => {
-      this.reactions_.push(this.initReaction(reaction))
-    })
-
-    this.listenPropChanges()
-    return this
-  }
-
-  initReaction (fn) {
-    if (isFunction(fn)) {
-      return this.initAutoReaction(fn)
+  initReaction (desc) {
+    if (isFunction(desc)) {
+      throw new Error('Refra does NOT support @autoReaction decorator.')
     }
 
     const item = {
-      fn: fn.fn.bind(this),
-      observing: fn.observing
+      fn: desc.fn.bind(this),
+      observing: desc.observing
     }
 
     return item
   }
 
-  initAutoReaction (fn) {
-    const item = {fn: fn.bind(this)}
-
-    try {
-      spy.start(nope)
-      // 注意, 这里暂不支持异步函数
-      fn.call(this)
-    } catch (err) {
-      this.trigger({
-        type: '__error__',
-        message: `Exception caught in reaction fn, Oberserved prop spy failed.`,
-        error: err
-      }, true)
-
-      throw err
-    } finally {
-      spy.end()
+  listenToPropChanges () {
+    if (this.reactionHandlerBinded_) {
+      return
     }
 
-    item.observing = spy.foundNames()
-    return item
+    this.reactionHandlerBinded_ = true
+    return this.addClearer(this.on('prop-changes', this.propChangesHandlerForReaction.bind(this)))
   }
 
-  listenPropChanges () {
-    this.propChangeHandlerOff_ =
-      this.on('prop-changes', this.propChangesHandler.bind(this))
-    return this
-  }
-
-  propChangesHandler (evt) {
+  propChangesHandlerForReaction (evt) {
     const reactions = this.reactions_
-    const {changes} = evt
+    const { changes } = evt
 
     const invokingReactions = reactions.filter(reaction => {
-      return reaction.observing.some(el => changes.find(change => {
+      return reaction.observing.some(el => !!changes.find(change => {
         return change.name === el
       }))
     })
 
-    invokingReactions.forEach(reaction => reaction.fn())
+    const values = changes.reduce((prev, el) => {
+      prev[el.name] = el
+      return prev
+    }, {})
+
+    invokingReactions.forEach(reaction => reaction.fn(values))
   }
 
   runPropGetter (name, getter) {

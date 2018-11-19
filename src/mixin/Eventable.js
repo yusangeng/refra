@@ -4,11 +4,11 @@
  * @author Y3G
  */
 
-import { microTask, macroTask } from '../utils/browserTask'
-import undisposed from '../decorator/undisposed'
-import mix from '../mix'
+import mix from 'mix-with'
+import { micro, macro } from 'polygala/lib/task'
 import Disposable from './Disposable'
 import isString from '../utils/isString'
+import undisposed from '../decorator/undisposed'
 
 const { assign, keys } = Object
 const { isArray } = Array
@@ -70,10 +70,10 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   trigger (event, sync = false) {
     this.initEventable()
 
-    const e = isString(event) ? {type: event} : event
+    const e = isString(event) ? { type: event } : event
     this.eventQueue_.push(e)
 
-    macroTask(_ => {
+    macro(_ => {
       const queue = this.eventQueue_
       if (!queue || !queue.length) return
 
@@ -97,7 +97,7 @@ export default superclass => class extends mix(superclass).with(Disposable) {
     }
 
     return new Promise((resolve, reject) => {
-      const fn = microTask(evt => {
+      const fn = micro(evt => {
         this.invoke(evt, snapshot).then(evt => resolve(evt)).catch(err => reject(err))
       })
 
@@ -143,7 +143,7 @@ export default superclass => class extends mix(superclass).with(Disposable) {
   }
 
   invoke (event, snapshot) {
-    const eventWithTarget = assign({target: this}, event)
+    const eventWithTarget = assign({ target: this }, event)
 
     if (this.disposed) {
       return Promise.resolve(eventWithTarget)

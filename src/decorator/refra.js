@@ -1,9 +1,8 @@
-import mix from '../mix'
-import Eventable from '../mixin/Eventable'
+import mix from 'mix-with'
 import Reactive from '../mixin/Reactive'
 
-export default function autoReactive (target) {
-  return class DecoratedEventableReactiveClass extends mix(target).with(Eventable, Reactive) {
+export default function refra (target) {
+  return class DecoratoredRefraClass extends mix(target).with(Reactive) {
     constructor (...params) {
       super(...params)
 

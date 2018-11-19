@@ -14,7 +14,7 @@ chai.should()
 describe('Clearable', _ => {
   describe('#constructor', _ => {
     it('should NOT throw error.', done => {
-      const dsp = new Clearable()
+      void new Clearable()
       done()
     })
   })

@@ -1,31 +1,4 @@
-export function action (target, key, descriptor) {
-  if (descriptor.get || descriptor.set) {
-    throw new TypeError(`Property should NOT be decorated by @action.`)
-  }
-
-  const fn = descriptor.value
-
-  return {
-    value: function (...params) {
-      this.startBatch()
-      let error = null
-      let ret = null
-
-      try {
-        ret = fn.apply(this, params)
-      } catch (err) {
-        error = err
-      }
-
-      this.endBatch()
-      if (error) throw error
-
-      return ret
-    }
-  }
-}
-
-export function asyncAction (target, key, descriptor) {
+export default function action (target, key, descriptor) {
   if (descriptor.get || descriptor.set) {
     throw new TypeError(`Property should NOT be decorated by @action.`)
   }
@@ -37,7 +10,7 @@ export function asyncAction (target, key, descriptor) {
       this.startBatch()
       const ret = fn.apply(this, params)
 
-      if (ret.then && ret.catch) {
+      if (ret && ret.then && ret.catch) {
         // 返回promise
         return ret.then((...data) => {
           this.endBatch()

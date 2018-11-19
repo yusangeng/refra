@@ -25,10 +25,13 @@ export default superclass => class extends superclass {
       this.clearerQueue_.forEach(fn => fn())
       this.clearerQueue_ = []
     }
+
+    return this
   }
 
   @undisposed
   addClearer (fn) {
     this.clearerQueue_.push(fn)
+    return this
   }
 }
