@@ -1,9 +1,13 @@
+/**
+ * 安全的Object.defineProperty, 防止babel编译后的代码报错
+ *
+ * @author Y3G
+ */
+
 let originalDefineProperty = null
 
 export function safeDefineProperty (target, key, context) {
-  // console.log('safeDefineProperty', key)
   if (target.hasOwnProperty(key)) {
-    // console.log('quit safeDefineProperty', target[key])
     return
   }
 

@@ -1,12 +1,12 @@
 /**
- * 批量清理支持
+ * 批量清理支持.
  *
  * @author Y3G
  */
 
 import undisposed from '../decorator/undisposed'
 
-export default superclass => class extends superclass {
+export default superclass => class Clearable extends superclass {
   constructor (...params) {
     super(...params)
     this.clearerQueue_ = []
@@ -14,9 +14,7 @@ export default superclass => class extends superclass {
 
   dispose () {
     this.runClearers()
-    if (super.dispose) {
-      super.dispose()
-    }
+    super.dispose()
   }
 
   @undisposed

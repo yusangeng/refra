@@ -18,7 +18,8 @@ export default function refra (target) {
       this.initReactive({
         props: target.prototype.__decorated_props__,
         computed: target.prototype.__decorated_computed__,
-        reactions: target.prototype.__decorated_reactions__
+        reactions: target.prototype.__decorated_reactions__,
+        children: target.prototype.__decorated_children__
       })
     }
   }

@@ -10,5 +10,7 @@ export default function computed (target, key, descriptor) {
   }
 
   arr[key] = descriptor.get
+  descriptor.enumerable = true
+
   return descriptor
 }

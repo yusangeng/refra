@@ -4,14 +4,18 @@
  * @author Y3G
  */
 
-export default function clone (val) {
-  if (Array.isArray(val)) {
-    return val.slice()
+import mapValue from '../utils/mapValue'
+
+const { isArray } = Array
+
+export default function clone (data) {
+  if (isArray(data)) {
+    return data.map(el => clone(el))
   }
 
-  if (typeof val === 'object') {
-    return Object.assign({}, val)
+  if (typeof data === 'object') {
+    return mapValue(data, (value) => clone(value))
   }
 
-  return val
+  return data
 }

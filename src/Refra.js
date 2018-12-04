@@ -3,7 +3,9 @@ import Reactive from './mixin/Reactive'
 import { polyfill, resume } from './utils/safeDefineProperty'
 
 export default class Refra extends mix().with(Reactive) {
-  static afterRefra () {
+  static initRefraObject (obj) {
+    void obj
+    // FIXME
     resume()
   }
 
@@ -22,9 +24,11 @@ export default class Refra extends mix().with(Reactive) {
     this.initReactive({
       props: this.constructor.prototype.__decorated_props__,
       computed: this.constructor.prototype.__decorated_computed__,
-      reactions: this.constructor.prototype.__decorated_reactions__
+      reactions: this.constructor.prototype.__decorated_reactions__,
+      children: this.constructor.prototype.__decorated_children__
     })
 
+    // FIXME
     polyfill()
   }
 }

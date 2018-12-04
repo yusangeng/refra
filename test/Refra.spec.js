@@ -5,8 +5,7 @@ import chai from 'chai'
 
 import { sleep } from 'polygala'
 import {
-  prop,
-  computed,
+  obx,
   action,
   reaction
 } from '../src/decorator'
@@ -18,16 +17,16 @@ class TestRefra2 extends Refra {
   reactionTimes = 0
   autoReactionTimes = 0
 
-  @prop testProp1 = 1
-  @prop testProp2 = 2
+  @obx testProp1 = 1
+  @obx testProp2 = 2
 
-  @computed get testComputed () {
+  @obx get testComputed () {
     return (this.testProp1 + this.testProp2) * 2
   }
 
   constructor () {
     super()
-    TestRefra2.afterRefra()
+    Refra.initRefraObject(this)
   }
 
   testMethod () {
@@ -88,7 +87,7 @@ describe('Refra superclass', _ => {
   })
 
   describe('#testMethod', _ => {
-    it('should have right props atfer testMethod', done => {
+    it('should have right props after testMethod', done => {
       const tr = new TestRefra2()
 
       tr.testMethod()
@@ -102,11 +101,11 @@ describe('Refra superclass', _ => {
   })
 
   describe('#testAction', _ => {
-    it('should trigger prop-changes ONLY once', async () => {
+    it('should trigger changes ONLY once', async () => {
       const tr = new TestRefra2()
       let i = 0
 
-      tr.on('prop-changes', _ => i++)
+      tr.on('changes', _ => i++)
       tr.testAction()
 
       await sleep(100)
@@ -114,7 +113,7 @@ describe('Refra superclass', _ => {
       i.should.be.equal(1)
     })
 
-    it('should have right props atfer testAction', async () => {
+    it('should have right props after testAction', async () => {
       const tr = new TestRefra2()
 
       tr.testAction()
@@ -125,18 +124,18 @@ describe('Refra superclass', _ => {
   })
 
   describe('#testAsyncAction', _ => {
-    it('should trigger prop-changes ONLY once', async () => {
+    it('should trigger changes ONLY once', async () => {
       const tr = new TestRefra2()
       let i = 0
 
-      tr.on('prop-changes', _ => i++)
+      tr.on('changes', _ => i++)
       await tr.testAsyncAction()
       await sleep(100)
 
       i.should.be.equal(1)
     })
 
-    it('should have right props atfer testAsyncAction', async () => {
+    it('should have right props after testAsyncAction', async () => {
       const tr = new TestRefra2()
 
       await tr.testAsyncAction()
@@ -150,11 +149,11 @@ describe('Refra superclass', _ => {
     it('should have right reactionTimes value after reaction', async () => {
       const tr = new TestRefra2()
 
-      tr.startBatch()
+      tr.beginAction()
       tr.testProp1 = 2
       tr.testProp1 = 3
       tr.testProp1 = 4
-      tr.endBatch()
+      tr.endAction()
 
       await sleep(100)
 

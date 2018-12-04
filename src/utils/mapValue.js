@@ -1,14 +1,16 @@
 /**
- * fake lodash.mapValue
+ * Fake lodash.mapvalues
  *
  * @author Y3G
  */
+
+const { keys } = Object
 
 export default function mapValue (object, iteratee) {
   object = Object(object)
   const result = {}
 
-  Object.keys(object).forEach((key) => {
+  keys(object).forEach((key) => {
     result[key] = iteratee(object[key], key, object)
   })
 

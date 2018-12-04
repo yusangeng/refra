@@ -1,23 +1,22 @@
 /**
- * 事件收发支持
+ * 事件收发支持.
  *
  * @author Y3G
  */
 
 import mix from 'mix-with'
+import isString from 'lodash.isstring'
 import { micro, macro } from 'polygala/lib/task'
 import Disposable from './Disposable'
-import isString from '../utils/isString'
 import undisposed from '../decorator/undisposed'
 
 const { assign, keys } = Object
 const { isArray } = Array
 var lastHandleValue = Number.MIN_SAFE_INTEGER
 
-export default superclass => class extends mix(superclass).with(Disposable) {
+export default superclass => class Eventable extends mix(superclass).with(Disposable) {
   @undisposed
   get eventPaused () {
-    this.initEventable()
     return this.eventPaused_
   }
 
@@ -35,8 +34,6 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
   @undisposed
   on (type, callback) {
-    this.initEventable()
-
     if (isArray(type)) {
       // 同时监听多个事件
       const offs = type.map(el => this.on(el, callback))
@@ -68,8 +65,6 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
   @undisposed
   trigger (event, sync = false) {
-    this.initEventable()
-
     const e = isString(event) ? { type: event } : event
     this.eventQueue_.push(e)
 
@@ -93,12 +88,12 @@ export default superclass => class extends mix(superclass).with(Disposable) {
     }
 
     if (sync) {
-      return this.invoke(e, snapshot)
+      return this.invokeEvent(e, snapshot)
     }
 
     return new Promise((resolve, reject) => {
       const fn = micro(evt => {
-        this.invoke(evt, snapshot).then(evt => resolve(evt)).catch(err => reject(err))
+        this.invokeEvent(evt, snapshot).then(evt => resolve(evt)).catch(err => reject(err))
       })
 
       fn(e)
@@ -107,13 +102,11 @@ export default superclass => class extends mix(superclass).with(Disposable) {
 
   @undisposed
   pauseEvent () {
-    this.initEventable()
     this.eventPaused_ = true
   }
 
   @undisposed
   resumeEvent () {
-    this.initEventable()
     this.eventPaused_ = false
   }
 
@@ -142,7 +135,7 @@ export default superclass => class extends mix(superclass).with(Disposable) {
     this.afterEvents(events)
   }
 
-  invoke (event, snapshot) {
+  invokeEvent (event, snapshot) {
     const eventWithTarget = assign({ target: this }, event)
 
     if (this.disposed) {
