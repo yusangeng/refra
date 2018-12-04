@@ -42,7 +42,7 @@ class Foobar {
 ### Using superclass Refra
 
 ``` js
-import { refra, obx, action, reaction } from 'refra'
+import { Refra, obx, action, reaction } from 'refra'
 
 class Foobar extends Refra {
   @obx someProp = 0
