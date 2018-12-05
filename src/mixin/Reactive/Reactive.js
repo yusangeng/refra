@@ -50,4 +50,21 @@ export default superclass => class Reactive extends mix(superclass)
 
     return freezed ? freeze(data) : data
   }
+
+  @undisposed
+  connectReactComponent (component, eventType = 'update') {
+    const off = this.on(eventType, _ => {
+      component.setState({
+        __reactive_ts__: Date.now()
+      })
+    })
+
+    component.componentWillUnmount = function () {
+      off()
+      const fn = component.constructor.prototype.componentWillUnmount
+      if (fn) {
+        fn.call(component)
+      }
+    }
+  }
 }
