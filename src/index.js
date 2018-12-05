@@ -15,8 +15,6 @@ import {
   connx
 } from './decorator'
 
-import Refra from './Refra'
-
 export {
   undisposed,
   observable,
