@@ -31,9 +31,7 @@ export {
   eventable,
   connection,
   child,
-  connx,
-
-  Refra
+  connx
 }
 
 export default {
@@ -50,7 +48,5 @@ export default {
   eventable,
   connection,
   child,
-  connx,
-
-  Refra
+  connx
 }
