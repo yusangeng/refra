@@ -1,6 +1,6 @@
 {
   "name": "refra",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Infrastructure of reactive programming.",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
