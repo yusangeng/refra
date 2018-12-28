@@ -59,11 +59,15 @@ export default superclass => class Reactive extends mix(superclass)
       })
     })
 
+    const originalHook =
+      component.hasOwnProperty('componentWillUnmount')
+        ? component.componentWillUnmount
+        : component.constructor.prototype.componentWillUnmount
+
     component.componentWillUnmount = function () {
       off()
-      const fn = component.constructor.prototype.componentWillUnmount
-      if (fn) {
-        fn.call(component)
+      if (originalHook) {
+        originalHook.call(component)
       }
     }
   }
