@@ -84,11 +84,13 @@ export default superclass => class HasObservable extends superclass {
 
     spy.addObserved(name)
 
-    if (prop.getter) {
-      return this.runPropGetter(name, prop.getter)
+    const { getter } = prop
+    if (getter) {
+      // 计算属性
+      return this.runPropGetter(name, getter, prop)
     }
 
-    return this.clone_(prop.value)
+    return prop.value
   }
 
   @undisposed
@@ -124,8 +126,12 @@ export default superclass => class HasObservable extends superclass {
   @undisposed
   setPropValues (map) {
     this.beginAction()
-    keys(map).forEach(key => this.setPropValue(key, map[key]))
-    this.endAction()
+
+    try {
+      keys(map).forEach(key => this.setPropValue(key, map[key]))
+    } finally {
+      this.endAction()
+    }
 
     return this
   }
@@ -194,6 +200,11 @@ export default superclass => class HasObservable extends superclass {
     keys(props).filter(key => {
       return props[key].getter && props[key].observing.includes(name)
     }).forEach(key => {
+      // 缓存失效
+      const prop = props[key]
+      prop.dirty = true
+      prop.cache = void 0
+
       // 对于computed属性, 只发出change事件即可, 避免冗余计算
       this.addPendingPropChange(key)
     })
@@ -237,6 +248,9 @@ export default superclass => class HasObservable extends superclass {
 
     try {
       prop.getter = getter.bind(this)
+      prop.dirty = true
+      prop.cache = void 0
+
       spy.start(name)
       this.getPropValue(name)
     } catch (err) {
@@ -255,7 +269,11 @@ export default superclass => class HasObservable extends superclass {
     return this
   }
 
-  runPropGetter (name, getter) {
+  runPropGetter (name, getter, prop) {
+    if (!prop.dirty) {
+      return prop.cache
+    }
+
     spy.setRunningGetterName(name)
     let ret = void 0
 
@@ -270,6 +288,9 @@ export default superclass => class HasObservable extends superclass {
     } finally {
       spy.setRunningGetterName(noop)
     }
+
+    prop.cache = ret
+    prop.dirty = false
 
     return ret
   }
