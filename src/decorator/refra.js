@@ -21,6 +21,12 @@ export default function refra (target) {
         reactions: target.prototype.__decorated_reactions__,
         children: target.prototype.__decorated_children__
       })
+
+      const { refraDidInitialized } = this
+
+      if (refraDidInitialized) {
+        refraDidInitialized.call(this)
+      }
     }
   }
 }
