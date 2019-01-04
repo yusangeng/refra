@@ -7,6 +7,75 @@
 import isFunction from 'lodash.isfunction'
 import undisposed from '../../decorator/undisposed'
 
+const { isArray } = Array
+
+function get (target, segments) {
+  const currentSegments = segments.slice()
+  let currentTarget = target
+  let ret = void 0
+
+  try {
+    while (currentSegments.length) {
+      const seg = currentSegments.shift()
+      currentTarget = currentTarget[seg]
+
+      if (!currentSegments.length) {
+        ret = currentTarget
+      }
+    }
+  } catch (err) {
+    return void 0
+  }
+
+  return ret
+}
+
+function differenceChecker (segments, equal, former, current) {
+  const formerValue = get(former, segments)
+  const currentValue = get(current, segments)
+
+  return !equal(formerValue, currentValue)
+}
+
+function parseObservingStr (str, equal) {
+  const segments = str.split('.')
+  const realObserving = segments.shift()
+
+  if (segments.length === 0) {
+    return {
+      observing: realObserving,
+      differenceChecker: void 0
+    }
+  }
+
+  return {
+    observing: realObserving,
+    differenceChecker: (former, current) =>
+      differenceChecker(segments, equal, former, current)
+  }
+}
+
+function createReactionItem (desc, equal) {
+  if (isFunction(desc)) {
+    throw new Error('Refra does NOT support @autoReaction decorator.')
+  }
+
+  let { observing, fn } = desc
+
+  if (!isArray(observing)) {
+    observing = [observing]
+  }
+
+  observing = observing.map(ob => parseObservingStr(ob, equal))
+
+  const ret = {
+    fn,
+    observing
+  }
+
+  return ret
+}
+
 export default superclass => class HasReaction extends superclass {
   @undisposed
   dispose () {
@@ -17,7 +86,7 @@ export default superclass => class HasReaction extends superclass {
 
   @undisposed
   initHasReaction (reactions) {
-    this.reactionHandlerBound_ = false
+    this.listenedForReaction_ = false
     this.reactions_ = []
     this.defineReactions(reactions)
     return this
@@ -26,33 +95,20 @@ export default superclass => class HasReaction extends superclass {
   @undisposed
   defineReactions (reactions) {
     reactions.forEach(reaction => {
-      this.reactions_.push(this.createReactionItem(reaction))
+      this.reactions_.push(createReactionItem(reaction, this.equal_))
     })
 
-    return this.listenUpdateForReaction()
+    return this.listenForReaction()
   }
 
   // private
 
-  createReactionItem (desc) {
-    if (isFunction(desc)) {
-      throw new Error('Refra does NOT support @autoReaction decorator.')
-    }
-
-    const item = {
-      fn: desc.fn.bind(this),
-      observing: desc.observing
-    }
-
-    return item
-  }
-
-  listenUpdateForReaction () {
-    if (this.reactionHandlerBound_) {
+  listenForReaction () {
+    if (this.listenedForReaction_) {
       return
     }
 
-    this.reactionHandlerBound_ = true
+    this.listenedForReaction_ = true
     return this.addClearer(this.on('changes', this.handlerForReaction.bind(this)))
   }
 
@@ -62,7 +118,14 @@ export default superclass => class HasReaction extends superclass {
 
     const invokingReactions = reactions.filter(reaction => {
       return reaction.observing.some(el => !!changes.find(change => {
-        return change.name === el
+        const { observing, differenceChecker: checker } = el
+        const { name, former, value } = change
+
+        if (name !== observing) {
+          return false
+        }
+
+        return !checker || checker(former, value)
       }))
     })
 
@@ -71,6 +134,6 @@ export default superclass => class HasReaction extends superclass {
       return prev
     }, {})
 
-    invokingReactions.forEach(reaction => reaction.fn(values))
+    invokingReactions.forEach(reaction => reaction.fn.call(this, values))
   }
 }

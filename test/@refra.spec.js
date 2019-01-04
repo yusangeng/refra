@@ -24,6 +24,14 @@ class TestRefra {
   @obx testProp2 = 2
   @obx testProp3 = null
 
+  @obx testProp4 = {
+    a: {
+      b: {
+        c: 1
+      }
+    }
+  }
+
   @obx get testComputed () {
     return (this.testProp1 + this.testProp2) * 2
   }
@@ -52,6 +60,11 @@ class TestRefra {
 
   @reaction('testProp1')
   testReaction () {
+    this.reactionTimes += 1
+  }
+
+  @reaction('testProp4.a.b.c')
+  testReaction2 () {
     this.reactionTimes += 1
   }
 
@@ -106,7 +119,7 @@ describe('@refra', _ => {
     })
   })
 
-  describe('#testMethod', _ => {
+  describe('#method', _ => {
     it('should have right props after testMethod', done => {
       const tr = new TestRefra()
 
@@ -120,7 +133,7 @@ describe('@refra', _ => {
     })
   })
 
-  describe('#testAction', _ => {
+  describe('#action', _ => {
     it('should trigger changes ONLY once', async () => {
       const tr = new TestRefra()
       let i = 0
@@ -143,7 +156,7 @@ describe('@refra', _ => {
     })
   })
 
-  describe('#testAsyncAction', _ => {
+  describe('#async action', _ => {
     it('should trigger changes ONLY once', async () => {
       const tr = new TestRefra()
       let i = 0
@@ -191,9 +204,23 @@ describe('@refra', _ => {
 
       tr.reactionTimes.should.be.equal(3)
     })
+
+    it('should trigger reaction when the decorator is @reaction("testProp.a.b.c")', async () => {
+      const tr = new TestRefra()
+
+      tr.testProp4 = { a: { b: { c: 2 } } }
+
+      await sleep(100)
+
+      tr.testProp4 = { a: { b: { c: 2 }, d: 3 } }
+
+      await sleep(100)
+
+      tr.reactionTimes.should.be.equal(1)
+    })
   })
 
-  describe('changes event handler', _ => {
+  describe('#changes event handler', _ => {
     it('should have right propChangesEventHandlerTimes', async () => {
       const tr = new TestRefra()
 
