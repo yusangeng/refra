@@ -22,6 +22,7 @@ class TestRefra {
 
   @obx testProp1 = 1
   @obx testProp2 = 2
+  @obx testProp3 = null
 
   @obx get testComputed () {
     return (this.testProp1 + this.testProp2) * 2
@@ -89,6 +90,18 @@ describe('@refra', _ => {
       const tr = new TestRefra()
       tr.dispose()
       tr.getPropValue.bind(tr, 'testProp1').should.throw()
+      done()
+    })
+  })
+
+  describe('#get & set obx prop', _ => {
+    it('should be equal to obj', done => {
+      const obj = { a: null, b: 1, c: [1, 2, 3], d: { x: void 0, y: 123 } }
+
+      const tr = new TestRefra()
+
+      tr.testProp3 = obj
+      JSON.stringify(obj).should.be.equal(JSON.stringify(tr.testProp3))
       done()
     })
   })
