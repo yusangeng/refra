@@ -16,9 +16,17 @@ import HasChildren from './HasChildren'
 import HasReaction from './HasReaction'
 import undisposed from '../../decorator/undisposed'
 
-const { assign, freeze } = Object
+const { assign, freeze, key } = Object
 
 const Base = superclass => mix(superclass).with(Clearable, Eventable)
+
+function shouldUpdate (includes, changes = {}) {
+  if (!includes) {
+    return true
+  }
+
+  return key(changes).some(name => includes.includes(name))
+}
 
 export default superclass => class Reactive extends mix(superclass)
   .with(Base, HasObservable, HasAction, HasChildren, HasReaction) {
@@ -52,8 +60,12 @@ export default superclass => class Reactive extends mix(superclass)
   }
 
   @undisposed
-  connectReactComponent (component, eventType = 'update') {
-    const off = this.on(eventType, _ => {
+  connectReactComponent (component, eventType = 'update', includes = null) {
+    const off = this.on(eventType, evt => {
+      if (!shouldUpdate(includes, evt.changes)) {
+        return
+      }
+
       component.setState({
         __reactive_ts__: Date.now()
       })
