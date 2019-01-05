@@ -1,6 +1,6 @@
 # refra | 响应式对象模型
 
-[![Build Status](https://travis-ci.org/yusangeng/refra.svg?branch=master)](https://travis-ci.org/yusangeng/refra) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)[![Npm Package](https://badge.fury.io/js/refra.svg)](https://www.npmjs.com/package/refra)
+[![Build Status](https://travis-ci.org/yusangeng/refra.svg?branch=master)](https://travis-ci.org/yusangeng/refra) [![Standard - JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Npm Package](https://badge.fury.io/js/refra.svg)](https://www.npmjs.com/package/refra)
 
 
 refra 是一个虚构单词, 用于指代具有可监听属性等特性, 支持响应式编程的对象模型. 本项目旨在提供一种简单的方式, 使得上层开发者可以 0 成本引入 refra 对象, 并在此之上开发应用.
