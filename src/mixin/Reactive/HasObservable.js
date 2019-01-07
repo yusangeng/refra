@@ -114,6 +114,8 @@ export default superclass => class HasObservable extends superclass {
     if (this.equal_(value, former)) return this
 
     this.observableProps_[name].value = this.clone_(value)
+    this.probe.beginUpdate()
+    this.probe.update({ name, value, former })
     this.addPendingPropChange(name, value, former)
 
     if (!this.isActing) {
@@ -187,9 +189,11 @@ export default superclass => class HasObservable extends superclass {
 
   addPendingPropChange (name, value, former) {
     const pending = this.pendingChanges_
-
-    if (!pending.find(el => el.name === name)) {
+    const item = pending.find(el => el.name === name)
+    if (!item) {
       pending.push({ name, value, former })
+    } else {
+      item.value = value
     }
 
     return this.addPendingComputedPropChange(name, value, former)
@@ -207,6 +211,7 @@ export default superclass => class HasObservable extends superclass {
 
       // 对于computed属性, 只发出change事件即可, 避免冗余计算
       this.addPendingPropChange(key)
+      this.probe.update({ name: key }, { name, value, former })
     })
 
     return this
@@ -215,12 +220,17 @@ export default superclass => class HasObservable extends superclass {
   doTriggerChanges () {
     const pending = this.pendingChanges_
 
+    if (!pending.length) {
+      return this
+    }
+
     pending.forEach(el => {
       this.trigger(assign({ type: 'change' }, el), true)
       this.trigger(assign({ type: `change:${el.name}` }, el), true)
     })
 
     this.trigger({ type: 'changes', changes: pending }, true)
+    this.trigger({ type: 'changes-internal', changes: pending }, true)
     this.observableUpdated_ = true
     this.pendingChanges_ = []
 

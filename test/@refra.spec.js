@@ -135,7 +135,17 @@ describe('@refra', _ => {
 
   describe('#action', _ => {
     it('should trigger changes ONLY once', async () => {
-      const tr = new TestRefra()
+      @refra
+      class TR {
+        @obx a = 0
+
+        @action
+        testAction () {
+          this.a = 1
+        }
+      }
+
+      const tr = new TR()
       let i = 0
 
       tr.on('changes', _ => i++)
@@ -158,7 +168,18 @@ describe('@refra', _ => {
 
   describe('#async action', _ => {
     it('should trigger changes ONLY once', async () => {
-      const tr = new TestRefra()
+      @refra
+      class TR {
+        @obx a = 0
+
+        @action
+        async testAsyncAction () {
+          sleep(50)
+          this.a = 1
+        }
+      }
+
+      const tr = new TR()
       let i = 0
 
       tr.on('changes', _ => i++)
@@ -179,7 +200,7 @@ describe('@refra', _ => {
   })
 
   describe('#reaction', _ => {
-    it('should have right reactionTimes value after reaction', async () => {
+    it('should have right reactionTimes value after reaction 1', async () => {
       const tr = new TestRefra()
 
       tr.beginAction()
@@ -193,7 +214,7 @@ describe('@refra', _ => {
       tr.reactionTimes.should.be.equal(1)
     })
 
-    it('should have right reactionTimes value after reaction', async () => {
+    it('should have right reactionTimes value after reaction 2', async () => {
       const tr = new TestRefra()
 
       tr.testProp1 = 2
@@ -202,7 +223,7 @@ describe('@refra', _ => {
 
       await sleep(100)
 
-      tr.reactionTimes.should.be.equal(3)
+      tr.reactionTimes.should.be.equal(2)
     })
 
     it('should trigger reaction when the decorator is @reaction("testProp.a.b.c")', async () => {
@@ -222,7 +243,19 @@ describe('@refra', _ => {
 
   describe('#changes event handler', _ => {
     it('should have right propChangesEventHandlerTimes', async () => {
-      const tr = new TestRefra()
+      @refra
+      class TR {
+        propChangesEventHandlerTimes = 0
+
+        @obx testProp1 = 1
+
+        @on('changes')
+        handleChanges () {
+          this.propChangesEventHandlerTimes++
+        }
+      }
+
+      const tr = new TR()
 
       tr.testProp1 = 2
       tr.testProp1 = 3
@@ -234,7 +267,19 @@ describe('@refra', _ => {
     })
 
     it('should have right propChangesEventHandlerTimes in batch mode', async () => {
-      const tr = new TestRefra()
+      @refra
+      class TR {
+        propChangesEventHandlerTimes = 0
+
+        @obx testProp1 = 1
+
+        @on('changes')
+        handleChanges () {
+          this.propChangesEventHandlerTimes++
+        }
+      }
+
+      const tr = new TR()
 
       tr.beginAction()
       tr.testProp1 = 2

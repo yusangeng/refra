@@ -99,7 +99,10 @@ export default superclass => class HasChildren extends superclass {
 
     this.addClearer(other.on('update', evt => {
       this.addPendingPropChange(name, other.getSnapshot())
-      this.doTriggerChanges()
+
+      if (!this.isActing) {
+        this.doTriggerChanges()
+      }
     }))
 
     defineProperty(this, name, {

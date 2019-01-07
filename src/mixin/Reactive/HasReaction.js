@@ -66,16 +66,54 @@ function createReactionItem (desc, equal) {
     observing = [observing]
   }
 
-  observing = observing.map(ob => parseObservingStr(ob, equal))
+  const parsedObserving = observing.map(ob => parseObservingStr(ob, equal))
 
+  const name = `${fn.name || 'anonymous-reaction'}(${observing.join(', ')})`
   const ret = {
     fn,
-    observing
+    name,
+    observing: parsedObserving,
+    rawObserving: observing
   }
 
   return ret
 }
 
+function execReaction (reaction, context, values) {
+  const { name, fn } = reaction
+  let reactionRet
+
+  try {
+    context.probe.beginReaction(name)
+    fn.call(context, values)
+  } catch (err) {
+    context.probe.endReaction()
+    return Promise.reject(err)
+  }
+
+  if (reactionRet && reactionRet.then && reactionRet.catch) {
+    // 异步
+    return reactionRet.then(_ => {
+      context.probe.endReaction(name)
+      return Promise.resolve()
+    }).catch(err => {
+      context.probe.endReaction(name)
+      return Promise.reject(err)
+    })
+  }
+
+  // 同步
+  context.probe.endReaction()
+  return Promise.resolve()
+}
+
+function execReactions (reactions, context, values) {
+  const chain = reactions.reduce((prev, reaction) => {
+    return prev.then(_ => execReaction(reaction, context, values))
+  }, Promise.resolve())
+
+  return chain
+}
 export default superclass => class HasReaction extends superclass {
   @undisposed
   dispose () {
@@ -109,10 +147,12 @@ export default superclass => class HasReaction extends superclass {
     }
 
     this.listenedForReaction_ = true
-    return this.addClearer(this.on('changes', this.handlerForReaction.bind(this)))
+    return this.addClearer(this.on('changes-internal', this.handlerForReaction.bind(this)))
   }
 
   handlerForReaction (evt) {
+    // console.log('---- handlerForReaction invoked ----')
+
     const reactions = this.reactions_
     const { changes } = evt
 
@@ -125,15 +165,37 @@ export default superclass => class HasReaction extends superclass {
           return false
         }
 
-        return !checker || checker(former, value)
+        const match = !checker || checker(former, value)
+        return match
       }))
     })
+
+    // console.log(`---- invokingReactions.length === ${invokingReactions.length} ----`)
+
+    if (!invokingReactions.length) {
+      this.probe.endUpdate()
+      return
+    }
 
     const values = changes.reduce((prev, el) => {
       prev[el.name] = el
       return prev
     }, {})
 
-    invokingReactions.forEach(reaction => reaction.fn.call(this, values))
+    this.beginAction()
+    execReactions(invokingReactions, this, values).then(_ => {
+      if (!this.pendingChanges_.length) {
+        this.probe.endUpdate()
+      }
+
+      this.endAction()
+    }).catch(err => {
+      if (!this.pendingChanges_.length) {
+        this.probe.endUpdate()
+      }
+
+      this.endAction()
+      throw err // FIXME
+    })
   }
 }

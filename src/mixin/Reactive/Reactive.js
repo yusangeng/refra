@@ -10,6 +10,7 @@ import fastClone from '../../utils/clone'
 import mapValue from '../../utils/mapValue'
 import Eventable from '../Eventable'
 import Clearable from '../Clearable'
+import HasDebugProbe from './HasDebugProbe'
 import HasObservable from './HasObservable'
 import HasAction from './HasAction'
 import HasChildren from './HasChildren'
@@ -29,7 +30,7 @@ function shouldUpdate (includes, changes = {}) {
 }
 
 export default superclass => class Reactive extends mix(superclass)
-  .with(Base, HasObservable, HasAction, HasChildren, HasReaction) {
+  .with(Base, HasDebugProbe, HasObservable, HasAction, HasChildren, HasReaction) {
   static get isReactive () {
     return true
   }
@@ -42,6 +43,7 @@ export default superclass => class Reactive extends mix(superclass)
   @undisposed
   initReactive ({ props = {}, computed = {}, reactions = [], children = {},
     equal = fastDeepEqual, clone = fastClone }) {
+    this.initHasDebugProbe()
     this.initHasObservable(props, computed, equal, clone)
     this.initHasAction()
     this.initHasChildren(children)

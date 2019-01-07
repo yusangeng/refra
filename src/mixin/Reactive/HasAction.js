@@ -9,23 +9,31 @@ import undisposed from '../../decorator/undisposed'
 export default superclass => class HasAction extends superclass {
   @undisposed
   get isActing () {
-    return this.isActing_
+    return !!this.actionCounter_
   }
 
   initHasAction () {
-    this.isActing_ = false
+    this.actionCounter_ = 0
   }
 
   @undisposed
   beginAction () {
-    this.isActing_ = true
+    this.actionCounter_ += 1
     return this
   }
 
   @undisposed
   endAction () {
-    this.isActing_ = false
-    this.doTriggerChanges()
+    if (this.actionCounter_ === 0) {
+      return this
+    }
+
+    this.actionCounter_ -= 1
+
+    if (this.actionCounter_ === 0) {
+      this.doTriggerChanges()
+    }
+
     return this
   }
 
@@ -50,9 +58,9 @@ export default superclass => class HasAction extends superclass {
       }
 
       // 异步方法
-      fnRet.then(_ => {
+      fnRet.then(shouldNOTbeAnything => {
         this.endAction()
-        resolve()
+        resolve(shouldNOTbeAnything)
       }).catch(err => {
         this.endAction()
         reject(err)
