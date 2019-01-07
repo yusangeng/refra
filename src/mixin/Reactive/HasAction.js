@@ -19,6 +19,11 @@ export default superclass => class HasAction extends superclass {
   @undisposed
   beginAction () {
     this.actionCounter_ += 1
+
+    if (this.actionCounter_ === 1) {
+      this.probe.beginAction()
+    }
+
     return this
   }
 
@@ -32,6 +37,7 @@ export default superclass => class HasAction extends superclass {
 
     if (this.actionCounter_ === 0) {
       this.doTriggerChanges()
+      this.probe.endAction()
     }
 
     return this

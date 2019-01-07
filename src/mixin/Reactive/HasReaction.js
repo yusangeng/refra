@@ -174,6 +174,7 @@ export default superclass => class HasReaction extends superclass {
 
     if (!invokingReactions.length) {
       this.probe.endUpdate()
+      this.trigger('update')
       return
     }
 
@@ -182,18 +183,19 @@ export default superclass => class HasReaction extends superclass {
       return prev
     }, {})
 
+    const checkPendingAndEndUpdate = _ => {
+      if (!this.pendingChanges_.length) {
+        this.probe.endUpdate()
+        this.trigger('update', true)
+      }
+    }
+
     this.beginAction()
     execReactions(invokingReactions, this, values).then(_ => {
-      if (!this.pendingChanges_.length) {
-        this.probe.endUpdate()
-      }
-
+      checkPendingAndEndUpdate()
       this.endAction()
     }).catch(err => {
-      if (!this.pendingChanges_.length) {
-        this.probe.endUpdate()
-      }
-
+      checkPendingAndEndUpdate()
       this.endAction()
       throw err // FIXME
     })

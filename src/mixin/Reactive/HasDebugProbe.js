@@ -4,14 +4,19 @@
  * @author Y3G
  */
 
+import isString from 'lodash.isstring'
 import undisposed from '../../decorator/undisposed'
 import eventable from '../../decorator/eventable'
 import on from '../../decorator/on'
+
+const { assign } = Object
 
 const UpdateStatus = {
   Waiting: 'waiting',
   Updating: 'updating'
 }
+
+let currId = 0
 
 @eventable
 class Probe {
@@ -21,16 +26,16 @@ class Probe {
   statusCounter = 0
   stack = []
   print= false
+  id = currId++
+  waterNo = 0
 
   constructor (context, options = {}) {
     this.print = !!options.print
   }
 
-  beginUpdate () {
-    this._setStatus(UpdateStatus.Updating)
-  }
-
   update (prop, reason) {
+    this._setStatus(UpdateStatus.Updating)
+
     this.trigger({
       type: 'update',
       prop,
@@ -81,12 +86,11 @@ class Probe {
   }
 
   _decStatusCounter () {
-    if (this.decStatusCounter > 0) {
-      this.decStatusCounter--
-    }
+    this.statusCounter = 0
   }
 
   _setStatus (status) {
+    // console.log(`${this.id}-${this.waterNo} _setStatus, status=${status}, statusCounter=${this.statusCounter}`)
     const prev = this.statusCounter
 
     if (status === UpdateStatus.Updating) {
@@ -97,10 +101,6 @@ class Probe {
       }
     } else if (status === UpdateStatus.Waiting) {
       this._decStatusCounter()
-
-      if (prev !== 1) {
-        return
-      }
     } else {
       throw new Error(`Bad status:${status}.`)
     }
@@ -123,6 +123,7 @@ class Probe {
       }, true)
 
       this.stack = []
+      this.waterNo++
     }
   }
 
@@ -140,7 +141,19 @@ class Probe {
       text = `${evt.prop.name} <- ${evt.reason ? evt.reason.name : 'none'}`
     }
 
-    console.log(`[PROBE] **** ${evt.type} **** ${text}`)
+    console.log(`[PROBE] ${evt.waterNo} **** ${evt.type} **** ${text}`)
+  }
+}
+
+class ProbeX extends Probe {
+  trigger (evt, sync) {
+    let e = evt
+    if (isString(e)) {
+      e = { type: e }
+    }
+
+    return super.trigger(assign({},
+      evt, { waterNo: `${this.id}-${this.waterNo}` }), sync)
   }
 }
 
@@ -156,6 +169,6 @@ export default superclass => class HasDebugProbe extends superclass {
   }
 
   initHasDebugProbe () {
-    this.probe = new Probe(this, { print: false })
+    this.probe = new ProbeX(this, { print: false })
   }
 }

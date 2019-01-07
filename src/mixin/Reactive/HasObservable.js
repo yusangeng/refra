@@ -63,7 +63,6 @@ export default superclass => class HasObservable extends superclass {
     }
 
     this.observableProps_ = {}
-    this.observableUpdated_ = false
     this.pendingChanges_ = []
 
     this.equal_ = equal
@@ -114,7 +113,6 @@ export default superclass => class HasObservable extends superclass {
     if (this.equal_(value, former)) return this
 
     this.observableProps_[name].value = this.clone_(value)
-    this.probe.beginUpdate()
     this.probe.update({ name, value, former })
     this.addPendingPropChange(name, value, former)
 
@@ -219,6 +217,7 @@ export default superclass => class HasObservable extends superclass {
 
   doTriggerChanges () {
     const pending = this.pendingChanges_
+    this.pendingChanges_ = []
 
     if (!pending.length) {
       return this
@@ -231,8 +230,6 @@ export default superclass => class HasObservable extends superclass {
 
     this.trigger({ type: 'changes', changes: pending }, true)
     this.trigger({ type: 'changes-internal', changes: pending }, true)
-    this.observableUpdated_ = true
-    this.pendingChanges_ = []
 
     return this
   }
@@ -303,25 +300,5 @@ export default superclass => class HasObservable extends superclass {
     prop.dirty = false
 
     return ret
-  }
-
-  afterEvents (events) {
-    if (!this.observableUpdated_ || !events || !events.length) {
-      return
-    }
-
-    const changes = events.filter(evt => evt.type === 'change').reduce((prev, evt) => {
-      const item = prev[evt.name] || (prev[evt.name] = {})
-      item.value = evt.value
-
-      if (!item.hasOwnProperty('former') && evt.hasOwnProperty('former')) {
-        item.former = evt.former
-      }
-
-      return prev
-    }, {})
-
-    this.observableUpdated_ = false
-    this.trigger({ type: 'update', changes }, true)
   }
 }
