@@ -14,6 +14,11 @@ const { assign, keys } = Object
 const { isArray } = Array
 var lastHandleValue = Number.MIN_SAFE_INTEGER
 
+function nonOverride (target, key, desc) {
+  desc.value.__non_override__ = true
+  return desc
+}
+
 export default superclass => class Eventable extends mix(superclass).with(Disposable) {
   @undisposed
   get eventPaused () {
@@ -68,13 +73,16 @@ export default superclass => class Eventable extends mix(superclass).with(Dispos
     const e = isString(event) ? { type: event } : event
     this.eventQueue_.push(e)
 
-    macro(_ => {
-      const queue = this.eventQueue_
-      if (!queue || !queue.length) return
+    if (!this.afterEvents.__non_override__) {
+      // 只有afterEvents被重载时, 有必要启动定时器, 这个操作是比较昂贵的
+      macro(_ => {
+        const queue = this.eventQueue_
+        if (!queue || !queue.length) return
 
-      this.doAfterEvents(queue)
-      this.eventQueue_ = []
-    })()
+        this.doAfterEvents(queue)
+        this.eventQueue_ = []
+      })()
+    }
 
     if (this.eventPaused) {
       return Promise.resolve(e)
@@ -110,11 +118,6 @@ export default superclass => class Eventable extends mix(superclass).with(Dispos
     this.eventPaused_ = false
   }
 
-  @undisposed
-  afterEvents (events) {
-    // 由子类重写
-  }
-
   // private
 
   initEventable () {
@@ -133,6 +136,11 @@ export default superclass => class Eventable extends mix(superclass).with(Dispos
     }
 
     this.afterEvents(events)
+  }
+
+  @nonOverride
+  afterEvents (events) {
+    // 由子类重写
   }
 
   invokeEvent (event, snapshot) {
