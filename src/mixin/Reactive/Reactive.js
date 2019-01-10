@@ -85,4 +85,9 @@ export default superclass => class Reactive extends mix(superclass)
       }
     }
   }
+
+  @undisposed
+  connect (...args) {
+    this.connectReactComponent(...args)
+  }
 }
