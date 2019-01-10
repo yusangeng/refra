@@ -4,6 +4,7 @@
  * @author Y3G
  */
 
+import isFunction from 'lodash.isfunction'
 import mix from 'mix-with'
 import fastDeepEqual from 'fast-deep-equal'
 import fastClone from '../../utils/clone'
@@ -48,6 +49,12 @@ export default superclass => class Reactive extends mix(superclass)
     this.initHasAction()
     this.initHasChildren(children)
     this.initHasReaction(reactions)
+
+    if (isFunction(this.componentDidMount) &&
+      isFunction(this.componentWillUnmount)) {
+      // react组件
+      this.connect(this)
+    }
 
     return this
   }
