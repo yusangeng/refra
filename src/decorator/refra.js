@@ -2,7 +2,11 @@ import mix from 'mix-with'
 import Reactive from '../mixin/Reactive'
 
 export default function refra (target) {
-  return class DecoratoredRefraClass extends mix(target).with(Reactive) {
+  class DecoratoredRefraClass extends mix(target).with(Reactive) {
+    static get displayName () {
+      return `${target.displayName || target.name || 'ReactComponent'}WithRefra`
+    }
+
     constructor (...params) {
       super(...params)
 
@@ -29,4 +33,10 @@ export default function refra (target) {
       }
     }
   }
+
+  if (target.prototype.isReactComponent) {
+    DecoratoredRefraClass.prototype.isReactComponent = true
+  }
+
+  return DecoratoredRefraClass
 }
