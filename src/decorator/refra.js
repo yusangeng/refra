@@ -3,9 +3,7 @@ import Reactive from '../mixin/Reactive'
 
 export default function refra (target) {
   class DecoratoredRefraClass extends mix(target).with(Reactive) {
-    static get displayName () {
-      return `${target.displayName || target.name || 'ReactComponent'}WithRefra`
-    }
+    static displayName = `${target.displayName || target.name || 'ReactComponent'}WithRefra`
 
     constructor (...params) {
       super(...params)
