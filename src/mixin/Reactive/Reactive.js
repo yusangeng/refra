@@ -54,6 +54,11 @@ export default superclass => class Reactive extends mix(superclass)
       isFunction(this.componentWillUnmount)) {
       // react组件
       this.connect(this)
+      const originalHook = this.componentWillUnmount
+      this.componentWillUnmount = _ => {
+        originalHook.call(this)
+        this.dispose()
+      }
     }
 
     return this
