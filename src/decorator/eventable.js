@@ -15,6 +15,12 @@ export default function eventable (target) {
           this.on(eventType, callback.bind(this))
         })
       }
+
+      const { eventableDidInitialized } = this
+
+      if (eventableDidInitialized) {
+        eventableDidInitialized.call(this)
+      }
     }
   }
 }
