@@ -81,7 +81,7 @@ export default superclass => class Reactive extends mix(superclass)
       }
 
       component.setState({
-        __reactive_ts__: Date.now()
+        __reactive_ts__: Date.now() + '_' + Math.random()
       })
     })
 
