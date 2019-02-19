@@ -64,6 +64,7 @@ export default superclass => class HasObservable extends superclass {
 
     this.observableProps_ = {}
     this.pendingChanges_ = []
+    this.originalPropValues_ = {}
 
     this.equal_ = equal
     this.clone_ = clone
@@ -144,6 +145,11 @@ export default superclass => class HasObservable extends superclass {
   @undisposed
   defineProps (props) {
     const names = keys(props)
+
+    names.forEach(name => {
+      this.originalPropValues_[name] = this[name]
+    })
+
     defineProperties(this, names.reduce((prev, name) => {
       if (this.hasProp(name)) {
         throw new Error(`Prop ${name} should NOT be defined repeatedly.`)
@@ -236,7 +242,11 @@ export default superclass => class HasObservable extends superclass {
 
   initProp (name, def) {
     const { validator } = def
-    const initValue = isFunction(def) ? def.call(this) : this.clone_(def)
+    let initValue = this.originalPropValues_[name]
+
+    if (typeof initValue === 'undefined') {
+      initValue = isFunction(def) ? def.call(this) : this.clone_(def)
+    }
 
     if (validator && !validator(initValue)) {
       throw new Error(`The initial value(${initValue}) of prop ${name} is NOT valid.`)

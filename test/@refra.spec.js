@@ -32,13 +32,15 @@ class TestRefra {
     }
   }
 
+  @obx testProp5 = '555'
+
   @obx get testComputed () {
     return (this.testProp1 + this.testProp2) * 2
   }
 
-  // constructor () {
-  //   console.log('new TestRefra')
-  // }
+  constructor () {
+    this.testProp5 = '666'
+  }
 
   testMethod () {
     this.testProp1 = 2
