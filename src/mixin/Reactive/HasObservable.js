@@ -241,7 +241,19 @@ export default superclass => class HasObservable extends superclass {
   }
 
   initProp (name, def) {
-    const { validator } = def
+    let validator
+
+    if (def) {
+      const keysDef = keys(def)
+
+      if (keysDef.length === 2 &&
+      def.hasOwnProperty('value') &&
+      def.hasOwnProperty('validator')) {
+        validator = def.validator
+        def = def.value
+      }
+    }
+
     let initValue = this.originalPropValues_[name]
 
     if (typeof initValue === 'undefined') {
