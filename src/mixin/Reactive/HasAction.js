@@ -24,14 +24,14 @@ export default superclass => class HasAction extends superclass {
 
   @undisposed
   beginAction (name = '') {
-    this.probe.log(`Try to begin action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
+    // this.probe.log(`Try to begin action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
     this.actionCounter_ += 1
 
     if (this.actionCounter_ === 1) {
       this.probe.beginAction(name)
       this.runningActionName_ = name
     } else {
-      this.probe.log(`Already acting, counter: ${this.actionCounter_}, trying: ${name}, running: ${this.runningActionName}`)
+      // this.probe.log(`Already acting, counter: ${this.actionCounter_}, trying: ${name}, running: ${this.runningActionName}`)
     }
 
     return this
@@ -39,7 +39,7 @@ export default superclass => class HasAction extends superclass {
 
   @undisposed
   endAction (name = '') {
-    this.probe.log(`Try to end action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
+    // this.probe.log(`Try to end action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
 
     if (this.actionCounter_ === 0) {
       return this
