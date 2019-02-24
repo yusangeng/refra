@@ -113,6 +113,9 @@ fb.someAction() // => anotherProperty is 3.
 
 方法装饰器, 将一个成员方法转化为一个监听属性变化并自动运行的数据回调. 支持监听多个属性, 支持监听属性的某一字段.
 
+注意:
+* reaction 是异步执行的, 同一个事件循环内多次改变属性, reaction 只会执行一次.
+
 案例:
 ``` js
 import sleep from 'sleep-promise'
@@ -303,12 +306,47 @@ fb.on('change:someProperty', evt => {
 
 批量改变事件, 当一个属性改变的时候, 系统会开启一个 microtask 用来合并 change 事件, 在此 microtask 之前的 change 事件会被合并为同一个 update 事件. update 事件一般用来避免不必要的刷新.
 
+### 全局函数
 
+#### createRefraClass
 
+除了装饰器, refra也支持使用 createRefraClass 函数更灵活的地定义 refra 类.
 
+``` js
+createRefraClass({ obx, action, reation, init, dispose })
+```
 
+参数:
+* obx: 可监听属性表.
+* action: action表.
+* reation: reaction列表.
+* init: 初始化函数.
+* dispose: 清理函数.
 
+案例
+``` js
+const Clazz = createRefraClass({
+  obx: {
+    foo: 42,
+    bar () {
+      return this.foo + 1
+    }
+  },
 
+  action: {
+    plus1 () {
+      this.foo += 1
+    }
+  }
 
+  reaction: [
+    {obx: ['foo'], onFooChange () {
+      console.log(`foo changed, bar = ${this.bar}.`)
+    }}
+  ]
+})
 
+const obj = new Clazz()
 
+obj.plus1()
+```
