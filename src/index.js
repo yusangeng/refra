@@ -18,6 +18,7 @@ import {
 import Eventable from './mixin/Eventable'
 import Clearable from './mixin/Clearable'
 import Reactive from './mixin/Reactive'
+import createRefraClass from './createRefraClass'
 
 export {
   undisposed,
@@ -36,7 +37,8 @@ export {
   connx,
   Eventable,
   Clearable,
-  Reactive
+  Reactive,
+  createRefraClass
 }
 
 export default {
@@ -56,5 +58,6 @@ export default {
   connx,
   Eventable,
   Clearable,
-  Reactive
+  Reactive,
+  createRefraClass
 }
