@@ -19,7 +19,7 @@ const UpdateStatus = {
 let currId = 0
 
 @eventable
-class Probe {
+class ProbeBase {
   static UpdateStatus = UpdateStatus
 
   status = UpdateStatus.Waiting
@@ -81,6 +81,14 @@ class Probe {
     this.stack.push({ type: 'end-action', name })
   }
 
+  log (text) {
+    this.trigger({
+      type: 'log',
+      text
+    }, true)
+    this.stack.push({ type: 'log', text })
+  }
+
   _incStatusCounter () {
     this.statusCounter++
   }
@@ -129,8 +137,8 @@ class Probe {
 
   @on(['begin-update', 'end-update', 'update',
     'begin-reaction', 'end-reaction',
-    'begin-action', 'end-action'])
-  handleEvents (evt) {
+    'begin-action', 'end-action', 'log'])
+  _handleEvents (evt) {
     if (!this.print) return
 
     let text = ''
@@ -139,13 +147,15 @@ class Probe {
       text = evt.name || ''
     } else if (evt.type === 'update') {
       text = `${evt.prop.name} <- ${evt.reason ? evt.reason.name : 'none'}`
+    } else if (evt.type === 'log') {
+      text = evt.text
     }
 
-    console.log(`[PROBE] ${evt.waterNo} **** ${evt.type} **** ${text}`)
+    console.log(`[PROBE]-${evt.waterNo}-${evt.type} ** ${text}`)
   }
 }
 
-class ProbeX extends Probe {
+class DefaultProbe extends ProbeBase {
   trigger (evt, sync) {
     let e = evt
     if (isString(e)) {
@@ -153,7 +163,7 @@ class ProbeX extends Probe {
     }
 
     return super.trigger(assign({},
-      evt, { waterNo: `${this.id}-${this.waterNo}` }), sync)
+      e, { waterNo: `${this.id}-${this.waterNo}` }), sync)
   }
 }
 
@@ -165,10 +175,20 @@ export default superclass => class HasDebugProbe extends superclass {
 
   @undisposed
   set probe (probe) {
+    const former = this.probe_
+
+    if (probe === former) {
+      return
+    }
+
+    if (former) {
+      former.dispose()
+    }
+
     this.probe_ = probe
   }
 
   initHasDebugProbe () {
-    this.probe = new ProbeX(this, { print: false })
+    this.probe = new DefaultProbe(this, { print: false })
   }
 }

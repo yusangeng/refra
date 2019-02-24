@@ -7,22 +7,22 @@ export default function action (target, key, descriptor) {
 
   return {
     value: function (...params) {
-      this.beginAction()
+      this.beginAction(key)
       const ret = fn.apply(this, params)
 
       if (ret && ret.then && ret.catch) {
         // 返回promise
         return ret.then((...data) => {
-          this.endAction()
+          this.endAction(key)
           return Promise.resolve(...data)
         }).catch(err => {
-          this.endAction()
+          this.endAction(key)
           return Promise.reject(err)
         })
       }
 
       // 如果不反回promise, 则等同同步action
-      this.endAction()
+      this.endAction(key)
 
       return ret
     }

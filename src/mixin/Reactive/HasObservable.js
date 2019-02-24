@@ -7,7 +7,7 @@
 import isFunction from 'lodash.isfunction'
 import undisposed from '../../decorator/undisposed'
 
-const { keys, defineProperties, assign } = Object
+const { keys, values, defineProperties, assign } = Object
 
 function noop () {}
 
@@ -235,8 +235,6 @@ export default superclass => class HasObservable extends superclass {
     })
 
     this.trigger({ type: 'changes', changes: pending }, true)
-    this.trigger({ type: 'changes-internal', changes: pending }, true)
-
     return this
   }
 
@@ -322,5 +320,37 @@ export default superclass => class HasObservable extends superclass {
     prop.dirty = false
 
     return ret
+  }
+
+  afterEvents (events) {
+    const changeEvents = events.filter(evt => evt.type === 'change')
+
+    if (!changeEvents.length) {
+      return
+    }
+
+    const newEvent = {
+      type: 'changes-internal',
+      changes: {}
+    }
+
+    changeEvents.forEach(evt => {
+      const { name, value, former } = evt
+      const { changes } = newEvent
+
+      if (!changes[name]) {
+        changes[name] = {
+          name, value, former
+        }
+      }
+
+      changes[name].value = value
+    })
+
+    const pending = keys(newEvent.changes)
+    newEvent.changes = values(newEvent.changes)
+
+    this.probe.log(`Triggering event: changes-internal, changes: ${pending.join(', ')}`)
+    this.trigger(newEvent, true)
   }
 }

@@ -57,7 +57,7 @@ function parseObservingStr (str, equal) {
 
 function createReactionItem (desc, equal) {
   if (isFunction(desc)) {
-    throw new Error('Refra does NOT support @autoReaction decorator.')
+    throw new Error('Refra@3+ does NOT support @autoReaction decorator.')
   }
 
   let { observing, fn } = desc
@@ -109,8 +109,12 @@ function execReaction (reaction, context, values) {
 
 function execReactions (reactions, context, values) {
   const chain = reactions.reduce((prev, reaction) => {
+    if (!prev) {
+      return execReaction(reaction, context, values)
+    }
+
     return prev.then(_ => execReaction(reaction, context, values))
-  }, Promise.resolve())
+  }, null)
 
   return chain
 }
@@ -118,7 +122,6 @@ export default superclass => class HasReaction extends superclass {
   @undisposed
   dispose () {
     delete this.reactions_
-
     super.dispose()
   }
 
@@ -151,8 +154,6 @@ export default superclass => class HasReaction extends superclass {
   }
 
   handlerForReaction (evt) {
-    // console.log('---- handlerForReaction invoked ----')
-
     const reactions = this.reactions_
     const { changes } = evt
 
@@ -166,6 +167,11 @@ export default superclass => class HasReaction extends superclass {
         }
 
         const match = !checker || checker(former, value)
+
+        if (match) {
+          this.probe.log(`Reaction matched, matched key: ${name}`)
+        }
+
         return match
       }))
     })
@@ -190,13 +196,14 @@ export default superclass => class HasReaction extends superclass {
       }
     }
 
-    this.beginAction()
+    const actionName = 'execReactions(internal)'
+    this.beginAction(actionName)
     execReactions(invokingReactions, this, values).then(_ => {
       checkPendingAndEndUpdate()
-      this.endAction()
+      this.endAction(actionName)
     }).catch(err => {
       checkPendingAndEndUpdate()
-      this.endAction()
+      this.endAction(actionName)
       throw err // FIXME
     })
   }

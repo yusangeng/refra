@@ -225,7 +225,7 @@ describe('@refra', _ => {
 
       await sleep(100)
 
-      tr.reactionTimes.should.be.equal(2)
+      tr.reactionTimes.should.be.equal(1)
     })
 
     it('should trigger reaction when the decorator is @reaction("testProp.a.b.c")', async () => {
