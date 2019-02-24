@@ -1,6 +1,6 @@
 import isFunction from 'lodash.isfunction'
 import mix from 'mix-with'
-import { Reactive } from './mixin/Reactive'
+import Reactive from './mixin/Reactive'
 
 function noop () {}
 const { keys } = Object
@@ -46,8 +46,8 @@ function _createRefraClass ({
       super()
 
       // 兼容单复数(新项目是使用单数形式的)
-      action = action | actions
-      reaction = reaction | reactions
+      action = action || actions
+      reaction = reaction || reactions
 
       this.initReactive({
         props: getProps(obx),
@@ -61,7 +61,7 @@ function _createRefraClass ({
         const item = action[key]
 
         this[key] = (...args) => {
-          this.act(_ => item.call(this, ...args))
+          this.act(_ => item.call(this, ...args), key)
         }
       })
 
