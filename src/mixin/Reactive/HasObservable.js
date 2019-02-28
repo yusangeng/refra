@@ -94,6 +94,11 @@ export default superclass => class HasObservable extends superclass {
   }
 
   @undisposed
+  copyPropValue (name) {
+    this.clone_(this.getPropValue(name))
+  }
+
+  @undisposed
   setPropValue (name, value) {
     const prop = this.observableProps_[name]
     const { getter, validator } = prop
