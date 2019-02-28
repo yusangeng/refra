@@ -86,9 +86,9 @@ export default function createRefraClass (...options) {
     action: {},
     reaction: [],
 
-    init () {
+    init (...args) {
       initFns.forEach(el => {
-        el.call(this)
+        el.call(this, ...args)
       })
     },
 
