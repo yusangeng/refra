@@ -95,7 +95,7 @@ export default superclass => class HasObservable extends superclass {
 
   @undisposed
   copyPropValue (name) {
-    this.clone_(this.getPropValue(name))
+    return this.clone_(this.getPropValue(name))
   }
 
   @undisposed
