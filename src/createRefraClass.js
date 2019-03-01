@@ -36,8 +36,8 @@ function getReactions (raw) {
 }
 
 function _createRefraClass ({
-  obx = {}, action = {}, reaction = [],
-  actions, reactions,
+  obx = {}, action = {}, method = {}, reaction = [],
+  actions, methods, reactions,
   init = noop, dispose = noop,
   equal, clone
 }) {
@@ -47,6 +47,7 @@ function _createRefraClass ({
 
       // 兼容单复数(新项目是使用单数形式的)
       action = action || actions
+      method = method || methods
       reaction = reaction || reactions
 
       this.initReactive({
@@ -62,6 +63,14 @@ function _createRefraClass ({
 
         this[key] = (...args) => {
           return this.act(_ => item.call(this, ...args), key)
+        }
+      })
+
+      keys(method).forEach(key => {
+        const item = method[key]
+
+        this[key] = (...args) => {
+          return item.call(this, ...args)
         }
       })
 
@@ -85,6 +94,7 @@ export default function createRefraClass (...options) {
     obx: {},
     action: {},
     reaction: [],
+    method: {},
 
     init (...args) {
       initFns.forEach(el => {
@@ -101,7 +111,7 @@ export default function createRefraClass (...options) {
 
   options.forEach(option => {
     const {
-      obx = {}, action = {}, reaction = [], init = noop, dispose = noop
+      obx = {}, action = {}, reaction = [], method = {}, init = noop, dispose = noop
     } = option
 
     keys(obx).forEach(key => {
@@ -118,6 +128,14 @@ export default function createRefraClass (...options) {
       }
 
       opt.action[key] = action[key]
+    })
+
+    keys(method).forEach(key => {
+      if (opt.method[key]) {
+        throw new Error(`duplicate method name: ${key}.`)
+      }
+
+      opt.method[key] = method[key]
     })
 
     opt.reaction = opt.reaction.concat(reaction)

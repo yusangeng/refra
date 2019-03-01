@@ -30,7 +30,13 @@ const Clazz = createRefraClass({
         this.c += 1
       }
     }
-  ]
+  ],
+
+  method: {
+    aandb () {
+      return this.a + this.b
+    }
+  }
 })
 
 describe('createRefraClass', async () => {
@@ -48,5 +54,6 @@ describe('createRefraClass', async () => {
     inst.a.should.be.eq(5)
     inst.b.should.be.eq(6)
     inst.c.should.be.eq(1)
+    inst.aandb().should.be.eq(11)
   })
 })
