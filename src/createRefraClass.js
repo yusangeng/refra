@@ -61,7 +61,7 @@ function _createRefraClass ({
         const item = action[key]
 
         this[key] = (...args) => {
-          this.act(_ => item.call(this, ...args), key)
+          return this.act(_ => item.call(this, ...args), key)
         }
       })
 
