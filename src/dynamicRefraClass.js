@@ -171,21 +171,23 @@ function _mixinRefraClass (BaseClass, {
     }
   }
 
+  const proto = RefraClass.prototype
+
   keys(actions).forEach(key => {
     const item = actions[key]
 
-    if (typeof RefraClass.prototype[key] !== 'undefined') {
+    if (typeof proto[key] !== 'undefined') {
       throw new Error(`Duplicate action name: ${key}.`)
     }
 
-    RefraClass.prototype[key] = function (...args) {
+    proto[key] = function (...args) {
       return this.act(() => item.call(this, ...args), key)
     }
   })
 
-  const decoratedProps = RefraClass.prototype.__decorated_props__
-  const decoratedComputedProps = RefraClass.prototype.__decorated_computed__
-  const decoratedReactions = RefraClass.prototype.__decorated_reactions__
+  const decoratedProps = proto.__decorated_props__ || (proto.__decorated_props__ = {})
+  const decoratedComputedProps = proto.__decorated_computed__ || (proto.__decorated_computed__ = {})
+  const decoratedReactions = proto.__decorated_reactions__ || (proto.__decorated_reactions__ = [])
   const props = getProps(obx)
   const computedProps = getComputed(obx)
 
