@@ -1,5 +1,6 @@
 import mix from 'mix-with'
 import Reactive from '../mixin/Reactive'
+import { mixinRefraClass } from '../dynamicRefraClass'
 
 export default function refra (target) {
   class DecoratoredRefraClass extends mix(target).with(Reactive) {
@@ -32,9 +33,12 @@ export default function refra (target) {
     }
   }
 
-  if (target.prototype.isReactComponent) {
-    DecoratoredRefraClass.prototype.isReactComponent = true
-  }
-
   return DecoratoredRefraClass
+}
+
+refra.mixin = function (...options) {
+  return function decorator (target) {
+    const refraTarget = refra(target)
+    return mixinRefraClass(refraTarget, ...options)
+  }
 }

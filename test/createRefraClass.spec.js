@@ -3,7 +3,7 @@
 import chai from 'chai'
 
 import { sleep } from 'polygala'
-import createRefraClass from '../src/createRefraClass'
+import { createRefraClass } from '../src/dynamicRefraClass'
 
 chai.should()
 
