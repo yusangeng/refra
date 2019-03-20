@@ -18,11 +18,13 @@ export default function refra (target) {
         })
       }
 
+      const proto = this.constructor.prototype
+
       this.initReactive({
-        props: target.prototype.__decorated_props__,
-        computed: target.prototype.__decorated_computed__,
-        reactions: target.prototype.__decorated_reactions__,
-        children: target.prototype.__decorated_children__
+        props: proto.__decorated_props__,
+        computed: proto.__decorated_computed__,
+        reactions: proto.__decorated_reactions__,
+        children: proto.__decorated_children__
       })
 
       const { refraDidInitialized } = this
