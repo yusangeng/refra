@@ -17,7 +17,7 @@ import HasChildren from './HasChildren'
 import HasReaction from './HasReaction'
 import undisposed from '../../decorator/undisposed'
 
-const { assign, freeze, key } = Object
+const { assign, freeze, keys } = Object
 
 const Base = superclass => mix(superclass).with(Clearable, Eventable)
 
@@ -26,7 +26,7 @@ function shouldUpdate (includes, changes = {}) {
     return true
   }
 
-  return key(changes).some(name => includes.includes(name))
+  return keys(changes).some(name => includes.includes(name))
 }
 
 export default superclass => class Reactive extends mix(superclass)
