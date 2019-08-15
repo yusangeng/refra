@@ -8,22 +8,22 @@ import undisposed from '../../decorator/undisposed'
 
 export default superclass => class HasAction extends superclass {
   @undisposed
-  get isActing () {
+  get isActing() {
     return !!this.actionCounter_
   }
 
   @undisposed
-  get runningActionName () {
+  get runningActionName() {
     return this.runningActionName_ || 'none'
   }
 
-  initHasAction () {
+  initHasAction() {
     this.actionCounter_ = 0
     this.runningActionName_ = ''
   }
 
   @undisposed
-  beginAction (name = '') {
+  beginAction(name = '') {
     // this.probe.log(`Try to begin action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
     this.actionCounter_ += 1
 
@@ -38,7 +38,7 @@ export default superclass => class HasAction extends superclass {
   }
 
   @undisposed
-  endAction (name = '') {
+  endAction(name = '') {
     // this.probe.log(`Try to end action, name: ${name}, counter: ${this.actionCounter_}, running: ${this.runningActionName}`)
 
     if (this.actionCounter_ === 0) {
@@ -57,7 +57,7 @@ export default superclass => class HasAction extends superclass {
   }
 
   @undisposed
-  act (fn, actionName) {
+  act(fn, actionName) {
     const name = actionName || fn.name
     this.beginAction(name)
 
@@ -74,6 +74,7 @@ export default superclass => class HasAction extends superclass {
       if (!fnRet || !fnRet.then || !fnRet.catch) {
         // 同步方法
         this.endAction(name)
+        resolve(fnRet)
         return
       }
 
